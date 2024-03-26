@@ -1,3 +1,4 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,10 +6,19 @@
 @layer base {
     :root {
         --background: 0 0% 100%;
+        --border: 0 0% 7%;
+
+        --foreground: 0 0% 20%;
+
+        --muted: 240 4.8% 95.9%;
+		--muted-foreground: 240 3.8% 46.1%;
     }
 }
 
 @layer base {
+    html {
+        font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    }
     * {
         @apply border-border;
     }
@@ -18,15 +28,52 @@
     }
 
     h1 {
-        @apply scroll-m-20 text-4xl font-extrabold tracking-tight;
+        @apply scroll-m-20 text-7xl font-extrabold tracking-tight;
     }
 
     h2 {
-        @apply scroll-m-20 text-3xl font-semibold tracking-tight;
+        @apply scroll-m-20 text-4xl font-semibold tracking-tight;
     }
 
     h3 {
         @apply scroll-m-20 text-2xl font-semibold tracking-tight;
     }
+
+    h4 {
+        @apply scroll-m-20 text-xl font-semibold tracking-tight;
+    }
+
+    p {
+        @apply leading-7;
+    }
+
+    .text-lead {
+        @apply text-xl text-muted-foreground;
+    }
+
+    .main-container {
+        @apply md:mx-4;
+    }
+
+    .main-content {
+        @apply px-4 md:px-0 py-3;
+    }
+
+    .main-content-small {
+        @apply px-4 md:px-0 py-1.5;
+    }
+
+    .main-content-large {
+        @apply px-4 md:px-2 py-6;
+    }
+
+    .main-inner-content {
+        @apply px-4 md:px-0 pb-3;
+    }
 }
 
+@layer components {
+    .container {
+        @apply divide-y md:px-4;
+    }
+}
