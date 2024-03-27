@@ -1,5 +1,7 @@
 <script>
     import { page } from '$app/stores';
+    import DeleteDialog from '$lib/components/DeleteDialog.svelte';
+
     const accounts = $page.data.accounts;
 </script>
 
@@ -15,8 +17,8 @@
                 <h2 class="main-content-small col-span-2 md:col-span-1">{account.name}</h2>
                 <p class="main-content-small">{account.number}</p>
                 <div class="main-content-small space-x-4">
-                    <button class="underline underline-offset-4 font-semibold">수정</button>
-                    <button class="underline underline-offset-4 font-semibold text-red-600">삭제</button>
+                    <button class="button-small">수정</button>
+                    <DeleteDialog accountId={account.id} />
                 </div>
             </div>
             <div class="main-content-small space-y-4 col-span-2 md:col-span-1">
@@ -37,9 +39,4 @@
             </div>
         </div>
     {/each}
-    <div>
-        <button class="main-content pt-4 underline underline-offset-4 font-semibold">
-            계좌 추가
-        </button>
-    </div>
 </div>

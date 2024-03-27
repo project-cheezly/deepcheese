@@ -70,6 +70,10 @@
     .main-inner-content {
         @apply px-4 pb-3;
     }
+
+    .button-small {
+        @apply underline underline-offset-4 font-semibold;
+    }
 }
 
 @layer components {
