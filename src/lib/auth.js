@@ -10,3 +10,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
         })
     ]
 });
+
+export function getEmail(locals) {
+    return locals.session?.user.email;
+}

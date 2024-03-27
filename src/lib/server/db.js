@@ -1,10 +1,7 @@
 import postgres from 'postgres';
 import { env } from '$env/dynamic/private';
 
-const url = `postgres://
-    ${env.DB_USER}:
-    ${env.DB_PASSWORD}@
-    ${env.DB_HOST}:
-    ${env.DB_PORT}`;
+const url = `postgres://${env.DB_USER}:${env.DB_PASSWORD}@${env.DB_HOST}:${env.DB_PORT}`;
 
-export const sql = postgres(url);
+const sql = postgres(url);
+export default sql;
