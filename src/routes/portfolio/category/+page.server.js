@@ -15,6 +15,18 @@ export async function load({ locals }) {
     }
 }
 
+export const actions = {
+    delete: async ({ locals, request }) => {
+        const email = getEmail(locals);
+        const data = await request.formData();
+
+        const categoryId = data.get('id');
+        const serialId = getUserSerialId(email);
+
+        await sql`DELETE FROM category WHERE id=${categoryId} AND user_id=${serialId}`;
+    }
+}
+
 async function loadCategories(email) {
     const serialId = getUserSerialId(email);
     return sql`SELECT id, name FROM category WHERE user_id=${serialId}`;

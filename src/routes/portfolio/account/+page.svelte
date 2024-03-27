@@ -21,7 +21,7 @@
                 <p class="main-content-small">{account.number}</p>
                 <div class="main-content-small space-x-4">
                     <button class="button-small">수정</button>
-                    <DeleteDialog accountId={account.id} />
+                    <DeleteDialog id={account.id} />
                 </div>
             </div>
             <Container.Description>

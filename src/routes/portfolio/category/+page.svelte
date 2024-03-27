@@ -20,7 +20,7 @@
                 </Container.ContentHeader>
                 <div class="main-content-small space-x-4">
                     <button class="button-small">수정</button>
-                    <DeleteDialog categoryId={category.id} />
+                    <DeleteDialog id={category.id} />
                 </div>
             </div>
             <Container.Description>

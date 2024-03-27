@@ -2,7 +2,7 @@ import { getEmail } from '$lib/auth';
 import { getUserSerialId } from "$lib/server/userList.js";
 import sql from "$lib/server/db";
 
-export async function load({ locals, data }) {
+export async function load({ locals }) {
     const email = getEmail(locals);
     const accounts = await loadAccounts(email);
     const assets = await loadCurrentAssetByAccount(email);
@@ -20,7 +20,7 @@ export const actions = {
         const email = getEmail(locals);
         const data = await request.formData();
 
-        const accountId = data.get('accountId');
+        const accountId = data.get('id');
         const serialId = getUserSerialId(email);
 
         await sql`DELETE FROM account WHERE id=${accountId} AND user_id=${serialId}`;

@@ -4,7 +4,7 @@
 
     let open = false;
 
-    export let accountId;
+    export let id;
 </script>
 
 <AlertDialog.Root bind:open>
@@ -25,7 +25,7 @@
             <h3>정말 삭제하시겠습니까?</h3>
             <p>삭제된 데이터는 복구할 수 없습니다.</p>
             <form method="POST" action="?/delete" class="space-x-4 text-right">
-                <input type="hidden" name="accountId" value="{accountId}" />
+                <input type="hidden" name="id" value="{id}" />
                 <button class="button-small" on:click={() => { open=false; }}>취소</button>
                 <button class="button-small text-red-600">삭제</button>
             </form>
