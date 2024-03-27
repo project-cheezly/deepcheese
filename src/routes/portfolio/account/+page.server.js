@@ -1,11 +1,11 @@
 import { getEmail } from '$lib/auth';
-import {getUserSerialId} from "$lib/server/userList.js";
+import { getUserSerialId } from "$lib/server/userList.js";
 import sql from "$lib/server/db";
 
 export async function load({ locals, data }) {
     const email = getEmail(locals);
     const accounts = await loadAccounts(email);
-    const assets = await loadCurrentAssetBalance(email);
+    const assets = await loadCurrentAssetByAccount(email);
 
     return {
         accounts: accounts.map(account => {
@@ -32,7 +32,7 @@ async function loadAccounts(email) {
     return sql`SELECT id, name, number FROM account WHERE user_id=${serialId}`;
 }
 
-async function loadCurrentAssetBalance(email) {
+async function loadCurrentAssetByAccount(email) {
     const serialId = getUserSerialId(email);
     const response= sql`
         SELECT asset_balance.account_id, asset.name, asset_balance.amount
