@@ -1,6 +1,7 @@
 <script>
     import { page } from '$app/stores';
     import DeleteDialog from '$lib/components/DeleteDialog.svelte';
+    import * as Container from '$lib/components/double-layer-container';
 
     const accounts = $page.data.accounts;
 </script>
@@ -10,18 +11,20 @@
     <div/>
 </div>
 
-<div class="container space-y-4 md:space-y-24">
+<Container.Root>
     {#each accounts as account}
-        <div class="grid grid-cols-2 pt-4 pb-12 space-y-4 md:space-y-0">
+        <Container.Content>
             <div>
-                <h2 class="main-content-small col-span-2 md:col-span-1">{account.name}</h2>
+                <Container.ContentHeader>
+                    {account.name}
+                </Container.ContentHeader>
                 <p class="main-content-small">{account.number}</p>
                 <div class="main-content-small space-x-4">
                     <button class="button-small">수정</button>
                     <DeleteDialog accountId={account.id} />
                 </div>
             </div>
-            <div class="main-content-small space-y-4 col-span-2 md:col-span-1">
+            <Container.Description>
                 {#each account.assets as asset}
                     <div class="grid grid-cols-2">
                         <div>
@@ -36,7 +39,7 @@
                         </div>
                     </div>
                 {/each}
-            </div>
-        </div>
+            </Container.Description>
+        </Container.Content>
     {/each}
-</div>
+</Container.Root>
