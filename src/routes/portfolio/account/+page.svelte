@@ -4,6 +4,7 @@
     import * as Container from '$lib/components/double-layer-container';
 
     const accounts = $page.data.accounts;
+    console.log(accounts[0].assets);
 </script>
 
 <div class="container">
@@ -29,12 +30,12 @@
                     <div class="grid grid-cols-2">
                         <div>
                             <h4>{asset.name}</h4>
-                            <p>{asset.amount}주</p>
+                            <p class="font-semibold text-gray-400">{asset.category_name} | {asset.amount}주</p>
                         </div>
                         <div class='text-right'>
                             <p class='font-semibold'>{asset.profit}원</p>
                             <p class='font-semibold {asset.change > 0 ? "text-red-600" : "text-blue-600"}'>
-                                {asset.change > 0 ? '+' : ''}{asset.change}원 ({asset.changeRate}%)
+                                {asset.change > 0 ? '+' : ''}{asset.change} ({asset.changeRate}%)
                             </p>
                         </div>
                     </div>

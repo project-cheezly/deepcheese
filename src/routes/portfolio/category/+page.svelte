@@ -28,7 +28,7 @@
                     <div class="grid grid-cols-2">
                         <div>
                             <h4>{asset.name}</h4>
-                            <p>{asset.amount}주</p>
+                            <p class="font-semibold text-gray-400">{asset.account_name} | {asset.amount}주</p>
                         </div>
                         <div class='text-right'>
                             <p class='font-semibold'>{asset.profit}원</p>

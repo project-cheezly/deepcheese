@@ -35,10 +35,10 @@ async function loadCategories(email) {
 async function loadCurrentAssetByCategory(email) {
     const serialId = getUserSerialId(email);
     const response = sql`
-        SELECT asset_balance.category_id, asset.name, asset_balance.amount
+        SELECT asset_balance.category_id, account.name as account_name, asset.name, asset_balance.amount
         FROM asset_balance
-        INNER JOIN asset
-        ON asset.id = asset_balance.asset_id
+        INNER JOIN asset ON asset.id = asset_balance.asset_id
+        INNER JOIN account ON account.id = asset_balance.account_id
         WHERE asset_balance.user_id=${serialId}`;
 
     return (await response).reduce((acc, row) => {
