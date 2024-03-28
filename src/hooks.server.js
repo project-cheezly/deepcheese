@@ -10,7 +10,7 @@ async function authorizationHandle({ event, resolve }) {
         return resolve(event);
     }
 
-    const session = await getEmail();
+    const session = await event.locals.auth();
     if (!session) throw redirect(303, '/auth/signin');
     if (getUserSerialId(session.user.email) === 0) error(403);
 
