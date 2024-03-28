@@ -2,8 +2,11 @@
     import { page } from '$app/stores';
     import * as Container from '$lib/components/double-layer-container';
     import DeleteDialog from "$lib/components/DeleteDialog.svelte";
+    import * as Dialog from "$lib/components/create-update-catalog";
+    import UpdateDialogContent from "./UpdateDialogContent.svelte";
 
     let categories = $page.data.categories;
+    let updateDialogOpen;
 </script>
 
 <div class="container">
@@ -19,7 +22,9 @@
                     {category.name}
                 </Container.ContentHeader>
                 <div class="main-content-small space-x-4">
-                    <button class="button-small">수정</button>
+                    <Dialog.Root title="수정" let:closeDialog>
+                        <UpdateDialogContent name={category.name} id={category.id} closeDialog={closeDialog} />
+                    </Dialog.Root>
                     <DeleteDialog id={category.id} />
                 </div>
             </div>

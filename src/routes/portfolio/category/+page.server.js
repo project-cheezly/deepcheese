@@ -24,6 +24,17 @@ export const actions = {
         const serialId = getUserSerialId(email);
 
         await sql`DELETE FROM category WHERE id=${categoryId} AND user_id=${serialId}`;
+    },
+
+    update: async ({ locals, request }) => {
+        const email = getEmail(locals);
+        const data = await request.formData();
+
+        const categoryId = data.get('id');
+        const serialId = getUserSerialId(email);
+        const name = data.get('name');
+
+        await sql`UPDATE category SET name=${name} WHERE id=${categoryId} AND user_id=${serialId}`;
     }
 }
 
