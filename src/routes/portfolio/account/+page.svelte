@@ -2,6 +2,9 @@
     import { page } from '$app/stores';
     import DeleteDialog from '$lib/components/DeleteDialog.svelte';
     import * as Container from '$lib/components/double-layer-container';
+    import * as Dialog from '$lib/components/create-update-catalog';
+    import UpdateDialogContent from "./UpdateDialogContent.svelte";
+    import CreateDialogContent from "./CreateDialogContent.svelte";
 
     const accounts = $page.data.accounts;
     console.log(accounts[0].assets);
@@ -21,7 +24,9 @@
                 </Container.ContentHeader>
                 <p class="main-content-small">{account.number}</p>
                 <div class="main-content-small space-x-4">
-                    <button class="button-small">수정</button>
+                    <Dialog.Root title="수정" let:closeDialog>
+                        <UpdateDialogContent {...account} closeDialog={closeDialog} />
+                    </Dialog.Root>
                     <DeleteDialog id={account.id} />
                 </div>
             </div>
@@ -43,4 +48,9 @@
             </Container.Description>
         </Container.Content>
     {/each}
+    <div class="main-content">
+        <Dialog.Root title="계좌 추가" let:closeDialog>
+            <CreateDialogContent {closeDialog} />
+        </Dialog.Root>
+    </div>
 </Container.Root>

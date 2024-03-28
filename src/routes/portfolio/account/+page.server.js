@@ -24,6 +24,32 @@ export const actions = {
         const serialId = getUserSerialId(email);
 
         await sql`DELETE FROM account WHERE id=${accountId} AND user_id=${serialId}`;
+    },
+
+    update: async ({ locals, request }) => {
+        const userId = getUserSerialId(getEmail(locals));
+        const data = await request.formData();
+
+        const accountId = data.get('id');
+        const name = data.get('name');
+        const number = data.get('number');
+
+        await sql`
+            UPDATE account 
+            SET name=${name}, number=${number}
+            WHERE id=${accountId} AND user_id=${userId}`;
+    },
+
+    create: async ({ locals, request }) => {
+        const userId = getUserSerialId(getEmail(locals));
+        const data = await request.formData();
+
+        const name = data.get('name');
+        const number = data.get('number');
+
+        await sql`
+            INSERT INTO account (user_id, name, number)
+            VALUES (${userId}, ${name}, ${number})`;
     }
 }
 
