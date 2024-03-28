@@ -3,7 +3,7 @@ import { getUserSerialId } from "$lib/server/userList.js";
 import sql from "$lib/server/db";
 
 export async function load({ locals }) {
-    const email = getEmail(locals);
+    const email = getEmail(await locals.auth());
     const accounts = await loadAccounts(email);
     const assets = await loadCurrentAssetByAccount(email);
 
@@ -17,7 +17,7 @@ export async function load({ locals }) {
 
 export const actions = {
     delete: async ({ locals, request }) => {
-        const email = getEmail(locals);
+        const email = getEmail(await locals.auth());
         const data = await request.formData();
 
         const accountId = data.get('id');
@@ -27,7 +27,7 @@ export const actions = {
     },
 
     update: async ({ locals, request }) => {
-        const userId = getUserSerialId(getEmail(locals));
+        const userId = getUserSerialId(getEmail(await locals.auth()));
         const data = await request.formData();
 
         const accountId = data.get('id');
@@ -41,7 +41,7 @@ export const actions = {
     },
 
     create: async ({ locals, request }) => {
-        const userId = getUserSerialId(getEmail(locals));
+        const userId = getUserSerialId(getEmail(await locals.auth()));
         const data = await request.formData();
 
         const name = data.get('name');

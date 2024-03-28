@@ -3,7 +3,7 @@ import { getUserSerialId } from "$lib/server/userList";
 import sql from '$lib/server/db';
 
 export async function load({ locals }) {
-    const email = getEmail(locals);
+    const email = getEmail(await locals.auth());
     const categories = await loadCategories(email);
     const assets = await loadCurrentAssetByCategory(email);
 
@@ -17,28 +17,25 @@ export async function load({ locals }) {
 
 export const actions = {
     delete: async ({ locals, request }) => {
-        const email = getEmail(locals);
         const data = await request.formData();
 
         const categoryId = data.get('id');
-        const serialId = getUserSerialId(email);
+        const serialId = getUserSerialId(getEmail(await locals.auth()));
 
         await sql`DELETE FROM category WHERE id=${categoryId} AND user_id=${serialId}`;
     },
 
     update: async ({ locals, request }) => {
-        const email = getEmail(locals);
         const data = await request.formData();
-
         const categoryId = data.get('id');
-        const serialId = getUserSerialId(email);
+        const serialId = getUserSerialId(getEmail(await locals.auth()));
         const name = data.get('name');
 
         await sql`UPDATE category SET name=${name} WHERE id=${categoryId} AND user_id=${serialId}`;
     },
 
     create: async({ locals, request }) => {
-        const userId = getUserSerialId(getEmail(locals));
+        const userId = getUserSerialId(getEmail(await locals.auth()));
         const data = await request.formData();
 
         const name = data.get('name');

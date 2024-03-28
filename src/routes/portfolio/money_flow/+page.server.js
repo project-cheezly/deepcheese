@@ -4,7 +4,7 @@ import { getEmail } from "$lib/auth";
 
 export async function load({ locals, url }) {
     const page = parseInt(url.searchParams.get('page')) || 1;
-    const user_id = getUserSerialId(getEmail(locals));
+    const user_id = getUserSerialId(getEmail(await locals.auth()));
 
     return {
         moneyFlow: await loadMoneyFlow(user_id, page),
@@ -17,7 +17,7 @@ export async function load({ locals, url }) {
 
 export const actions = {
     create: async ({ locals, request }) => {
-        let user_id = getUserSerialId(getEmail(locals));
+        let user_id = getUserSerialId(getEmail(await locals.auth()));
 
         let data = await request.formData();
         let record_date = data.get('record_date');

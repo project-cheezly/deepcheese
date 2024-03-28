@@ -4,7 +4,7 @@ import {getEmail} from "$lib/auth";
 
 export async function load({ locals, url }){
     const page = parseInt(url.searchParams.get('page')) || 1;
-    const email = getEmail(locals);
+    const email = getEmail(await locals.auth());
 
     const ledger = await loadLedger(email, page);
     const categories = await loadCategories(email);
@@ -26,7 +26,7 @@ export const actions = {
     create: async ({ locals, request }) => {
         let data = await request.formData();
 
-        const user_id = getUserSerialId(getEmail(locals));
+        const user_id = getUserSerialId(getEmail(await locals.auth()));
 
         const record_date = data.get('record_date');
         const category_id = data.get('category_id');
@@ -45,7 +45,7 @@ export const actions = {
             };
         }
 
-        const result = await sql.begin(async (sql) => {
+        await sql.begin(async (sql) => {
             await sql`
                 INSERT INTO ledger
                 (user_id, record_date, category_id, account_id, asset_id, type, amount, value, fee)

@@ -2,6 +2,6 @@ import { getEmail } from '$lib/auth';
 
 export async function load(event) {
     return {
-        session: getEmail(event.locals)
+        session: getEmail(await event.locals.auth())
     }
 }
