@@ -7,7 +7,6 @@
     import CreateDialogContent from "./CreateDialogContent.svelte";
 
     let categories = $page.data.categories;
-    let updateDialogOpen;
 </script>
 
 <div class="container">
@@ -16,6 +15,9 @@
 </div>
 
 <Container.Root>
+    {#if categories.length === 0}
+        <p class="text-center text-gray-400 pt-24">거래 기록이 존재하지 않습니다.</p>
+    {/if}
     {#each categories as category}
         <Container.Content>
             <div>

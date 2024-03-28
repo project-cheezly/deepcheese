@@ -63,13 +63,14 @@ export const actions = {
 
             const adjustedValue = trade_type === 'BUY' ? -value : value;
             await sql`
-                INSERT INTO money_balance (user_id, currency_id, account_id, value)
+                INSERT INTO money_balance (user_id, currency_id, account_id, category_id, value)
                 VALUES (
                     ${user_id},
                     (SELECT currency_id FROM asset WHERE id=${asset_id}),
                     ${account_id},
+                    ${category_id},
                     ${adjustedValue}::NUMERIC(12, 2) * ${amount}::INTEGER - ${fee}::NUMERIC(12, 2)
-                ) ON CONFLICT (user_id, currency_id, account_id)
+                ) ON CONFLICT (user_id, currency_id, account_id, category_id)
                 DO UPDATE SET value = money_balance.value 
                 + ${adjustedValue}::NUMERIC(12, 2) 
                 * ${amount}::INTEGER 

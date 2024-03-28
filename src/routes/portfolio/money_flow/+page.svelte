@@ -1,6 +1,8 @@
 <script>
     import { page } from '$app/stores';
+    import * as Dialog from '$lib/components/create-update-catalog';
     import Pagination from "$lib/components/Pagination.svelte";
+    import CreateDialogContent from "./CreateDialogContent.svelte";
 
     $: moneyFlow = $page.data.moneyFlow;
 
@@ -33,5 +35,10 @@
             </div>
         </div>
     {/each}
+    <div class="main-content">
+        <Dialog.Root title="입출금 기록 추가" let:closeDialog>
+            <CreateDialogContent {categories} {accounts} {closeDialog} />
+        </Dialog.Root>
+    </div>
 </div>
 <Pagination page={pageCnt} contentCnt={maxPage} />
