@@ -4,6 +4,7 @@
     import DeleteDialog from "$lib/components/DeleteDialog.svelte";
     import * as Dialog from "$lib/components/create-update-catalog";
     import UpdateDialogContent from "./UpdateDialogContent.svelte";
+    import CreateDialogContent from "./CreateDialogContent.svelte";
 
     let categories = $page.data.categories;
     let updateDialogOpen;
@@ -46,4 +47,9 @@
             </Container.Description>
         </Container.Content>
     {/each}
+    <div class="main-content pt-4">
+        <Dialog.Root title="카테고리 추가" let:closeDialog>
+            <CreateDialogContent closeDialog={closeDialog} />
+        </Dialog.Root>
+    </div>
 </Container.Root>

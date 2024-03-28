@@ -35,6 +35,14 @@ export const actions = {
         const name = data.get('name');
 
         await sql`UPDATE category SET name=${name} WHERE id=${categoryId} AND user_id=${serialId}`;
+    },
+
+    create: async({ locals, request }) => {
+        const userId = getUserSerialId(getEmail(locals));
+        const data = await request.formData();
+
+        const name = data.get('name');
+        await sql`INSERT INTO category (name, user_id) VALUES (${name}, ${userId})`;
     }
 }
 
