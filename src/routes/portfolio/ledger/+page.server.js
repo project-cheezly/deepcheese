@@ -22,6 +22,62 @@ export async function load({ locals, url }){
     }
 }
 
+export const actions = {
+    create: async ({ locals, request }) => {
+        let data = await request.formData();
+
+        const user_id = getUserSerialId(getEmail(locals));
+
+        const record_date = data.get('record_date');
+        const category_id = data.get('category_id');
+        const account_id = data.get('account_id');
+        const asset_id = data.get('asset_id');
+        const trade_type = data.get('trade_type');
+        const amount = data.get('amount');
+        const value = data.get('value');
+        const fee = data.get('fee');
+
+        // null check
+        if (!record_date || !category_id || !account_id || !asset_id || !trade_type || !amount || !value || !fee) {
+            return {
+                status: 400,
+                body: { message: 'Missing required fields' }
+            };
+        }
+
+        const result = await sql.begin(async (sql) => {
+            await sql`
+                INSERT INTO ledger
+                (user_id, record_date, category_id, account_id, asset_id, type, amount, value, fee)
+                VALUES (${user_id}, ${record_date}, ${category_id}, ${account_id}, ${asset_id}, ${trade_type},
+                ${amount}, ${value}, ${fee})`;
+
+            if (trade_type === 'BUY' || trade_type === 'SELL') {
+                const adjustedAmount = trade_type === 'BUY' ? amount : -amount;
+                await sql`
+                    INSERT INTO asset_balance (user_id, category_id, asset_id, account_id, amount)
+                    VALUES (${user_id}, ${category_id}, ${asset_id}, ${account_id}, ${adjustedAmount})
+                    ON CONFLICT (user_id, category_id, asset_id, account_id)
+                    DO UPDATE SET amount = asset_balance.amount + ${adjustedAmount}`;
+            }
+
+            const adjustedValue = trade_type === 'BUY' ? -value : value;
+            await sql`
+                INSERT INTO money_balance (user_id, currency_id, account_id, value)
+                VALUES (
+                    ${user_id},
+                    (SELECT currency_id FROM asset WHERE id=${asset_id}),
+                    ${account_id},
+                    ${adjustedValue}::NUMERIC(12, 2) * ${amount}::INTEGER - ${fee}::NUMERIC(12, 2)
+                ) ON CONFLICT (user_id, currency_id, account_id)
+                DO UPDATE SET value = money_balance.value 
+                + ${adjustedValue}::NUMERIC(12, 2) 
+                * ${amount}::INTEGER 
+                - ${fee}::NUMERIC(12, 2)`;
+        });
+    }
+}
+
 async function loadLedger(email, page) {
     const serialId = getUserSerialId(email);
     return sql`
