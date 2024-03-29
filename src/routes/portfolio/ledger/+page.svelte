@@ -4,8 +4,7 @@
     import { page } from '$app/stores';
     import CreateDialogContent from "./CreateDialogContent.svelte";
 
-    $: ledger = $page.data.ledger;
-    const { assets, categories, accounts, pageCnt, maxPage } = $page.data;
+    const { ledger, assets, categories, accounts, pageCnt, maxPage } = $page.data;
 
     const tradeType = {
         BUY: "매수",
@@ -32,9 +31,15 @@
                 <p>{categories[item.category_id]} | {accounts[item.account_id]}</p>
             </div>
             <div class="text-right">
-                <p class="font-semibold">{item.value}원</p>
+                <p class="font-semibold">
+                    {new Intl.NumberFormat('ko-KR').format(item.value)}
+                    {item.currency_id === 1 ? '원' : '달러'}
+                </p>
                 <p>{item.amount}주</p>
-                <p class="text-gray-400">{item.fee}</p>
+                <p class="text-gray-400">
+                    {new Intl.NumberFormat('ko-KR').format(item.fee)}
+                    {item.currency_id === 1 ? '원' : '달러'}
+                </p>
             </div>
         </div>
     {/each}

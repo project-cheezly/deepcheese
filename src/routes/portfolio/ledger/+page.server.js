@@ -81,8 +81,9 @@ export const actions = {
 
 async function loadLedger(serialId, page) {
     return sql`
-        SELECT * 
+        SELECT ledger.*, asset.currency_id
         FROM ledger
+        INNER JOIN asset ON ledger.asset_id = asset.id
         WHERE user_id=${serialId}
         ORDER BY record_date DESC
         LIMIT 10 OFFSET ${(page - 1) * 10}`;

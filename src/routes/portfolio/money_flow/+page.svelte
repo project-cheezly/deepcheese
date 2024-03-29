@@ -31,7 +31,10 @@
             </div>
             <div class="text-right">
                 <p class="text-red-600 font-semibold">{moneyFlowType[item.transaction_type]}</p>
-                <p class="font-semibold">{item.value}{item.currency_id === 1 ? '원' : '달러'}</p>
+                <p class="font-semibold">
+                    {new Intl.NumberFormat('ko-KR').format(item.value)}
+                    {item.currency_id === 1 ? '원' : '달러'}
+                </p>
             </div>
         </div>
     {/each}
