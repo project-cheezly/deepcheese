@@ -7,6 +7,7 @@
     import CreateDialogContent from "./CreateDialogContent.svelte";
 
     let categories = $page.data.categories;
+    console.log(categories);
 </script>
 
 <div class="container">
@@ -39,9 +40,23 @@
                             <p class="font-semibold text-gray-400">{asset.account_name} | {asset.amount}주</p>
                         </div>
                         <div class='text-right'>
-                            <p class='font-semibold'>{asset.profit}원</p>
+                            <p class='font-semibold'>{asset.profit} 원</p>
                             <p class='font-semibold {asset.change > 0 ? "text-red-600" : "text-blue-600"}'>
                                 {asset.change > 0 ? '+' : ''}{asset.change}원 ({asset.changeRate}%)
+                            </p>
+                        </div>
+                    </div>
+                {/each}
+                {#each category.balance as balance}
+                    <div class="grid grid-cols-2">
+                        <div>
+                            <h4>{balance.currency_id === 1 ? '원화' : '미화'}</h4>
+                            <p class="font-semibold text-gray-400">{balance.account_name}</p>
+                        </div>
+                        <div class='text-right'>
+                            <p class='font-semibold'>
+                                {new Intl.NumberFormat('ko-KR').format(balance.value)}
+                                {balance.currency_id === 1 ? '원' : '달러'}
                             </p>
                         </div>
                     </div>

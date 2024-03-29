@@ -6,10 +6,12 @@ export async function load({ locals }) {
     const serialId = getUserSerialId(await getEmailFromLocals(locals));
     const categories = await loadCategories(serialId);
     const assets = await loadCurrentAssetByCategory(serialId);
+    const balance = await loadBalanceByCategory(serialId);
 
     return {
         categories: categories.map(category => {
             category.assets = assets[category.id] || [];
+            category.balance = balance[category.id] || [];
             return category;
         })
     }
@@ -54,6 +56,20 @@ async function loadCurrentAssetByCategory(serialId) {
         INNER JOIN asset ON asset.id = asset_balance.asset_id
         INNER JOIN account ON account.id = asset_balance.account_id
         WHERE asset_balance.user_id=${serialId}`;
+
+    return (await response).reduce((acc, row) => {
+        acc[row.category_id] = acc[row.category_id] || [];
+        acc[row.category_id].push(row);
+        return acc;
+    }, {});
+}
+
+async function loadBalanceByCategory(serialId) {
+    const response = sql`
+        SELECT money_balance.category_id, money_balance.currency_id, money_balance.value, account.name as account_name
+        FROM money_balance
+        INNER JOIN account ON account.id = money_balance.account_id
+        WHERE money_balance.user_id=${serialId}`;
 
     return (await response).reduce((acc, row) => {
         acc[row.category_id] = acc[row.category_id] || [];
