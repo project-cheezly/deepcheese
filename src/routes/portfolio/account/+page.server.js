@@ -1,11 +1,11 @@
-import { getEmail } from '$lib/auth';
+import { getEmailFromLocals } from '$lib/auth';
 import { getUserSerialId } from "$lib/server/userList.js";
 import sql from "$lib/server/db";
 
 export async function load({ locals }) {
-    const email = getEmail(await locals.auth());
-    const accounts = await loadAccounts(email);
-    const assets = await loadCurrentAssetByAccount(email);
+    const serialId = getUserSerialId(await getEmailFromLocals(locals));
+    const accounts = await loadAccounts(serialId);
+    const assets = await loadCurrentAssetByAccount(serialId);
 
     return {
         accounts: accounts.map(account => {
@@ -17,17 +17,16 @@ export async function load({ locals }) {
 
 export const actions = {
     delete: async ({ locals, request }) => {
-        const email = getEmail(await locals.auth());
-        const data = await request.formData();
+        const serialId = getUserSerialId(await getEmailFromLocals(locals));
 
+        const data = await request.formData();
         const accountId = data.get('id');
-        const serialId = getUserSerialId(email);
 
         await sql`DELETE FROM account WHERE id=${accountId} AND user_id=${serialId}`;
     },
 
     update: async ({ locals, request }) => {
-        const userId = getUserSerialId(getEmail(await locals.auth()));
+        const userId = getUserSerialId(await getEmailFromLocals(locals));
         const data = await request.formData();
 
         const accountId = data.get('id');
@@ -41,7 +40,7 @@ export const actions = {
     },
 
     create: async ({ locals, request }) => {
-        const userId = getUserSerialId(getEmail(await locals.auth()));
+        const userId = getUserSerialId(await getEmailFromLocals(locals));
         const data = await request.formData();
 
         const name = data.get('name');
@@ -53,13 +52,11 @@ export const actions = {
     }
 }
 
-async function loadAccounts(email) {
-    const serialId = getUserSerialId(email);
+async function loadAccounts(serialId) {
     return sql`SELECT id, name, number FROM account WHERE user_id=${serialId}`;
 }
 
-async function loadCurrentAssetByAccount(email) {
-    const serialId = getUserSerialId(email);
+async function loadCurrentAssetByAccount(serialId) {
     const response= sql`
         SELECT asset_balance.account_id, category.name as category_name, asset.name, asset_balance.amount
         FROM asset_balance

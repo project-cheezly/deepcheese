@@ -1,16 +1,16 @@
 import sql from '$lib/server/db';
 import { getUserSerialId } from "$lib/server/userList";
-import {getEmail} from "$lib/auth";
+import { getEmailFromLocals } from "$lib/auth";
 
 export async function load({ locals, url }){
     const page = parseInt(url.searchParams.get('page')) || 1;
-    const email = getEmail(await locals.auth());
+    const serialId = getUserSerialId(await getEmailFromLocals(locals))
 
-    const ledger = await loadLedger(email, page);
-    const categories = await loadCategories(email);
-    const accounts = await loadAccounts(email);
+    const ledger = await loadLedger(serialId, page);
+    const categories = await loadCategories(serialId);
+    const accounts = await loadAccounts(serialId);
     const assets = await loadAssets();
-    const maxPage = await calculateMaxPage(email);
+    const maxPage = await calculateMaxPage(serialId);
 
     return {
         ledger: ledger,
@@ -26,7 +26,7 @@ export const actions = {
     create: async ({ locals, request }) => {
         let data = await request.formData();
 
-        const user_id = getUserSerialId(getEmail(await locals.auth()));
+        const user_id = getUserSerialId(await getEmailFromLocals(locals));
 
         const record_date = data.get('record_date');
         const category_id = data.get('category_id');
@@ -79,8 +79,7 @@ export const actions = {
     }
 }
 
-async function loadLedger(email, page) {
-    const serialId = getUserSerialId(email);
+async function loadLedger(serialId, page) {
     return sql`
         SELECT * 
         FROM ledger
@@ -89,8 +88,7 @@ async function loadLedger(email, page) {
         LIMIT 10 OFFSET ${(page - 1) * 10}`;
 }
 
-async function loadCategories(email) {
-    const serialId = getUserSerialId(email);
+async function loadCategories(serialId) {
     const response= await sql`SELECT id, name FROM category WHERE user_id=${serialId}`;
     return response.reduce((acc, {id, name}) => {
         acc[id] = name;
@@ -98,8 +96,7 @@ async function loadCategories(email) {
     }, {});
 }
 
-async function loadAccounts(email) {
-    const serialId = getUserSerialId(email);
+async function loadAccounts(serialId) {
     const response = await sql`SELECT id, name FROM account WHERE user_id=${serialId}`;
     return response.reduce((acc, {id, name}) => {
         acc[id] = name;
@@ -115,8 +112,7 @@ async function loadAssets() {
     }, {});
 }
 
-async function calculateMaxPage(email) {
-    const serialId = getUserSerialId(email);
+async function calculateMaxPage(serialId) {
     const response = await sql`SELECT COUNT(*) FROM ledger WHERE user_id=${serialId}`;
     return Math.ceil(response[0].count);
 }

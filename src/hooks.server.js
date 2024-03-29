@@ -1,7 +1,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { dev } from '$app/environment';
-import { handle as authenticationHandle, getEmail } from '$lib/auth';
+import { handle as authenticationHandle } from '$lib/auth';
 import { getUserSerialId } from '$lib/server/userList';
 
 async function authorizationHandle({ event, resolve }) {
