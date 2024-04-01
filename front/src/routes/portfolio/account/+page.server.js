@@ -64,7 +64,7 @@ async function loadCurrentAssetByAccount(serialId) {
         FROM asset_balance
         INNER JOIN asset ON asset.id = asset_balance.asset_id
         INNER JOIN category ON category.id = asset_balance.category_id
-        WHERE asset_balance.user_id=${serialId}`;
+        WHERE category.user_id=${serialId}`;
 
     return (await response).reduce((acc, row) => {
         acc[row.account_id] = acc[row.account_id] || [];
@@ -75,10 +75,10 @@ async function loadCurrentAssetByAccount(serialId) {
 
 async function loadBalanceByAccount(serialId) {
     const response = sql`
-        SELECT money_balance.account_id, money_balance.currency_id, money_balance.value, category.name as category_name
-        FROM money_balance
-        INNER JOIN category ON category.id = money_balance.category_id
-        WHERE money_balance.user_id=${serialId}`;
+        SELECT bank_balance.account_id, bank_balance.currency_id, bank_balance.value, category.name as category_name
+        FROM bank_balance
+        INNER JOIN category ON category.id = bank_balance.category_id
+        WHERE category.user_id=${serialId}`;
 
     return (await response).reduce((acc, row) => {
         acc[row.account_id] = acc[row.account_id] || [];

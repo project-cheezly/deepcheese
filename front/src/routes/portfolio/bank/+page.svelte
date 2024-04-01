@@ -5,6 +5,7 @@
     import CreateDialogContent from "./CreateDialogContent.svelte";
 
     $: moneyFlow = $page.data.moneyFlow;
+    $: console.log(moneyFlow);
 
     const { maxPage, pageCnt, accounts, categories } = $page.data;
 
@@ -30,7 +31,7 @@
                 <p class="font-semibold">{new Date(item.record_date).toLocaleDateString()}</p>
             </div>
             <div class="text-right">
-                <p class="text-red-600 font-semibold">{moneyFlowType[item.transaction_type]}</p>
+                <p class="text-red-600 font-semibold">{moneyFlowType[item.flow]}</p>
                 <p class="font-semibold">
                     {new Intl.NumberFormat('ko-KR').format(item.value)}
                     {item.currency_id === 1 ? '원' : '달러'}

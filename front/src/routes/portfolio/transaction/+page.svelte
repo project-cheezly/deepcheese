@@ -7,9 +7,10 @@
     const { ledger, assets, categories, accounts, pageCnt, maxPage } = $page.data;
 
     const tradeType = {
-        BUY: "매수",
-        SELL: "매도",
-        DEPOSIT: "입금",
+        '1': '매수',
+        '2': '매도',
+        '3': '배당',
+        '4': '무상증자'
     };
 </script>
 
@@ -26,7 +27,13 @@
         <div class="grid grid-cols-2 px-4 pt-4 pb-4 space-y-4 md:space-y-0 items-end">
             <div>
                 <p class="text-gray-400">{new Date(item.record_date).toLocaleDateString()}</p>
-                <p class="text-red-600 font-semibold">{tradeType[item.type]}</p>
+                {#if tradeType[item.tr_type_id] === '매수'}
+                    <p class="text-red-600 font-semibold">{tradeType[item.tr_type_id]}</p>
+                {:else if tradeType[item.tr_type_id] === '매도'}
+                    <p class="text-blue-600 font-semibold">{tradeType[item.tr_type_id]}</p>
+                {:else}
+                    <p class="font-semibold">{tradeType[item.tr_type_id]}</p>
+                {/if}
                 <h4>{assets[item.asset_id]}</h4>
                 <p>{categories[item.category_id]} | {accounts[item.account_id]}</p>
             </div>

@@ -6,14 +6,14 @@ export async function load({ locals, url }){
     const page = parseInt(url.searchParams.get('page')) || 1;
     const serialId = getUserSerialId(await getEmailFromLocals(locals))
 
-    const ledger = await loadLedger(serialId, page);
+    const transactionRecord = await loadTransactionRecord(serialId, page);
     const categories = await loadCategories(serialId);
     const accounts = await loadAccounts(serialId);
     const assets = await loadAssets();
     const maxPage = await calculateMaxPage(serialId);
 
     return {
-        ledger: ledger,
+        ledger: transactionRecord,
         pageCnt: page,
         categories: categories,
         assets: assets,
@@ -25,8 +25,6 @@ export async function load({ locals, url }){
 export const actions = {
     create: async ({ locals, request }) => {
         let data = await request.formData();
-
-        const user_id = getUserSerialId(await getEmailFromLocals(locals));
 
         const record_date = data.get('record_date');
         const category_id = data.get('category_id');
@@ -45,46 +43,27 @@ export const actions = {
             };
         }
 
-        await sql.begin(async (sql) => {
-            await sql`
-                INSERT INTO ledger
-                (user_id, record_date, category_id, account_id, asset_id, type, amount, value, fee)
-                VALUES (${user_id}, ${record_date}, ${category_id}, ${account_id}, ${asset_id}, ${trade_type},
-                ${amount}, ${value}, ${fee})`;
-
-            if (trade_type === 'BUY' || trade_type === 'SELL') {
-                const adjustedAmount = trade_type === 'BUY' ? amount : -amount;
-                await sql`
-                    INSERT INTO asset_balance (user_id, category_id, asset_id, account_id, amount)
-                    VALUES (${user_id}, ${category_id}, ${asset_id}, ${account_id}, ${adjustedAmount})
-                    ON CONFLICT (user_id, category_id, asset_id, account_id)
-                    DO UPDATE SET amount = asset_balance.amount + ${adjustedAmount}`;
-            }
-
-            const adjustedValue = trade_type === 'BUY' ? -value : value;
-            await sql`
-                INSERT INTO money_balance (user_id, currency_id, account_id, category_id, value)
-                VALUES (
-                    ${user_id},
-                    (SELECT currency_id FROM asset WHERE id=${asset_id}),
-                    ${account_id},
-                    ${category_id},
-                    ${adjustedValue}::NUMERIC(12, 2) * ${amount}::INTEGER - ${fee}::NUMERIC(12, 2)
-                ) ON CONFLICT (user_id, currency_id, account_id, category_id)
-                DO UPDATE SET value = money_balance.value 
-                + ${adjustedValue}::NUMERIC(12, 2) 
-                * ${amount}::INTEGER 
-                - ${fee}::NUMERIC(12, 2)`;
-        });
+        await sql`CALL insert_transaction(
+            ${record_date},
+            ${category_id},
+            ${account_id},
+            ${asset_id},
+            ${trade_type},
+            ${amount},
+            ${value},
+            ${fee}
+        );`;
     }
 }
 
-async function loadLedger(serialId, page) {
+async function loadTransactionRecord(serialId, page) {
     return sql`
-        SELECT ledger.*, asset.currency_id
-        FROM ledger
-        INNER JOIN asset ON ledger.asset_id = asset.id
-        WHERE user_id=${serialId}
+        SELECT transaction_record.*, market.currency_id
+        FROM transaction_record
+        INNER JOIN asset ON transaction_record.asset_id = asset.id
+        INNER JOIN market ON asset.market_id = market.id
+        INNER JOIN category ON transaction_record.category_id = category.id
+        WHERE category.user_id = ${serialId}
         ORDER BY record_date DESC
         LIMIT 10 OFFSET ${(page - 1) * 10}`;
 }
@@ -114,6 +93,10 @@ async function loadAssets() {
 }
 
 async function calculateMaxPage(serialId) {
-    const response = await sql`SELECT COUNT(*) FROM ledger WHERE user_id=${serialId}`;
+    const response = await sql`
+        SELECT COUNT(*)
+        FROM transaction_record
+        INNER JOIN category ON transaction_record.category_id = category.id
+        WHERE category.user_id=${serialId}`;
     return Math.ceil(response[0].count);
 }
