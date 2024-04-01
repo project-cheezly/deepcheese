@@ -9,21 +9,19 @@ export async function load({ locals, url }){
     const transactionRecord = await loadTransactionRecord(serialId, page);
     const categories = await loadCategories(serialId);
     const accounts = await loadAccounts(serialId);
-    const assets = await loadAssets();
     const maxPage = await calculateMaxPage(serialId);
 
     return {
         ledger: transactionRecord,
         pageCnt: page,
         categories: categories,
-        assets: assets,
         accounts: accounts,
         maxPage: maxPage
     }
 }
 
 export const actions = {
-    create: async ({ locals, request }) => {
+    create: async ({ request }) => {
         let data = await request.formData();
 
         const record_date = data.get('record_date');
@@ -78,14 +76,6 @@ async function loadCategories(serialId) {
 
 async function loadAccounts(serialId) {
     const response = await sql`SELECT id, name FROM account WHERE user_id=${serialId}`;
-    return response.reduce((acc, {id, name}) => {
-        acc[id] = name;
-        return acc;
-    }, {});
-}
-
-async function loadAssets() {
-    const response = await sql`SELECT id, name FROM asset`;
     return response.reduce((acc, {id, name}) => {
         acc[id] = name;
         return acc;
