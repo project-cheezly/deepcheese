@@ -32,8 +32,3 @@ inquire-price = "/uapi/domestic-futureoption/v1/quotations/inquire-price" # 선�
 inquire-price = "/uapi/overseas-price/v1/quotations/price" # 해외주식 현재체결가
 inquire-periodic-price = "/uapi/overseas-price/v1/quotations/dailyprice" # 해외주식 기간별시세
 inquire-periodic-forex = "/uapi/overseas-price/v1/quotations/inquire-daily-chartprice" # 해외주식 종목/지수/환율기간별시세(일/주/월/년)
-
-[market-code]
-Nasdaq = "NAS"
-NYSE = "NYS"
-AMEX = "AMS"

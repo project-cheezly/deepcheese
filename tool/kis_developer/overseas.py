@@ -1,6 +1,6 @@
 import datetime
 import httpx
-from .config import uri, tr_id, market
+from .config import uri, tr_id
 
 
 class KISOverseas:
@@ -14,7 +14,7 @@ class KISOverseas:
 
         params = {
             "AUTH": "",
-            "EXCD": market["market-code"][market_code],
+            "EXCD": market_code,
             "SYMB": stock_code
         }
 
@@ -78,7 +78,7 @@ class KISOverseas:
 
         params = {
             "AUTH": "",
-            "EXCD": market["market-code"][market_code],
+            "EXCD": market_code,
             "SYMB": stock_code,
             "GUBN": period_div_code,
             "BYMD": end_date.strftime("%Y%m%d"),

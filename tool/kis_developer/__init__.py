@@ -1,1 +1,1 @@
-from .access_token import AccessToken
+from .kis import KIS
