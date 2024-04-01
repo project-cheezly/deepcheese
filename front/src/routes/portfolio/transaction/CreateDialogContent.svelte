@@ -1,12 +1,7 @@
 <script>
     import * as Dialog from "$lib/components/create-update-catalog";
     export let closeDialog;
-    export let assets, accounts, categories;
-
-    $: assetList = Object.entries(assets).reduce((acc, [key, value]) => {
-        acc.push({id: key, name: value});
-        return acc;
-    }, []);
+    export let accounts, categories;
 
     $: accountList = Object.entries(accounts).reduce((acc, [key, value]) => {
         acc.push({id: key, name: value});
@@ -30,7 +25,7 @@
 <form method="POST" action='?/create' class="pt-4">
     <div class="space-y-4">
         <Dialog.DateInput />
-        <Dialog.SelectInput itemList={assetList} name="asset_id" />
+        <Dialog.SelectInput name="asset_id" />
         <Dialog.TouchSelectInput items={tradeType} name="trade_type" title="거래 분류" />
         <Dialog.TouchSelectInput items={accountList} name="account_id" title="계좌" />
         <Dialog.TouchSelectInput items={categoryList} name="category_id" title="카테고리" />

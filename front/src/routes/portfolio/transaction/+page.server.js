@@ -58,7 +58,7 @@ export const actions = {
 
 async function loadTransactionRecord(serialId, page) {
     return sql`
-        SELECT transaction_record.*, market.currency_id
+        SELECT transaction_record.*, market.currency_id, asset.name AS asset_name
         FROM transaction_record
         INNER JOIN asset ON transaction_record.asset_id = asset.id
         INNER JOIN market ON asset.market_id = market.id

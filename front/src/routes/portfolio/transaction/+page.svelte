@@ -4,7 +4,7 @@
     import { page } from '$app/stores';
     import CreateDialogContent from "./CreateDialogContent.svelte";
 
-    const { ledger, assets, categories, accounts, pageCnt, maxPage } = $page.data;
+    const { ledger, categories, accounts, pageCnt, maxPage } = $page.data;
 
     const tradeType = {
         '1': '매수',
@@ -34,7 +34,7 @@
                 {:else}
                     <p class="font-semibold">{tradeType[item.tr_type_id]}</p>
                 {/if}
-                <h4>{assets[item.asset_id]}</h4>
+                <h4>{item.asset_name}</h4>
                 <p>{categories[item.category_id]} | {accounts[item.account_id]}</p>
             </div>
             <div class="text-right">
@@ -52,7 +52,7 @@
     {/each}
     <div class="main-content">
         <Dialog.Root title="거래 기록 추가" let:closeDialog>
-            <CreateDialogContent {closeDialog} assets={assets} accounts={accounts} categories={categories}/>
+            <CreateDialogContent {closeDialog} accounts={accounts} categories={categories}/>
         </Dialog.Root>
     </div>
 </div>
