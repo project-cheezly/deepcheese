@@ -8,9 +8,9 @@
     export let itemList = [];
 
     $: filteredItems =
-        inputValue
+        (inputValue
             ? itemList.filter(item => item.name.includes(inputValue))
-            : itemList;
+            : itemList).slice(0, 10);
 
 </script>
 
