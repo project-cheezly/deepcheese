@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  Cheeseboard:
+    container_name: Cheeseboard
+    image: Cheeseboard
+    build:
+      context: .
+      dockerfile: Dockerfile
+    user: "node"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - front/.env
+    restart: unless-stopped
+    ports:
+      - 80:80
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
