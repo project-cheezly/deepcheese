@@ -49,7 +49,7 @@ class KISOverseas:
             market_div_code: str,
             period_div_code: str
     ):
-        header = {"tr_id": tr_id["overseas-stock"]["inquire-periodic-price"]}
+        header = {"tr_id": tr_id["overseas-stock"]["inquire-periodic-forex"]}
         header.update(self.__base_header)
 
         params = {
@@ -60,7 +60,7 @@ class KISOverseas:
             "FID_PERIOD_DIV_CODE": period_div_code
         }
 
-        endpoint = uri["origin"]["production"] + uri["overseas-stock"]["inquire-periodic-price"]
+        endpoint = uri["origin"]["production"] + uri["overseas-stock"]["inquire-periodic-forex"]
         return self.__client.get(endpoint, headers=header, params=params).json()
 
     def inquire_daily_price(self, market_code: str, stock_code: str, end_date: datetime.date):
