@@ -12,10 +12,7 @@ price_update_query = """
 """
 
 
-def update_current_stock_price():
-    database = PostgreSQL()
-    kis = KIS()
-
+def update_current_stock_price(database: PostgreSQL, kis: KIS):
     update_target_assets = database.conn.execute("""
         SELECT market.kis_code, asset.code, asset.id
         FROM asset

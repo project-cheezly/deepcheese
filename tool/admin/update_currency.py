@@ -12,10 +12,7 @@ currency_update_query = """
 """
 
 
-def update_current_currency():
-    database = PostgreSQL()
-    kis = KIS()
-
+def update_current_currency(database: PostgreSQL, kis: KIS):
     update_target_currencies = database.conn.execute("""
         SELECT currency.kis_code, currency.id
         FROM currency
@@ -28,7 +25,7 @@ def update_current_currency():
         kis_code = currency[0]
         day = (datetime.datetime.now() - datetime.timedelta(hours=5))
 
-        if 9 > datetime.datetime.now().hour:
+        if 9 > datetime.datetime.now().hour or datetime.datetime.now().hour > 15:
             continue
 
         value = kis.overseas.inquire_daily_forex(kis_code, day)['output2'][0]['ovrs_nmix_prpr']
