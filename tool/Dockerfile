@@ -16,4 +16,4 @@ RUN export $(cat .env | xargs)
 RUN poetry install --no-dev
 RUN ln -snf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
-CMD ["poetry", "run", "python", "-m", "admin", "--asset_price"]
+CMD ["poetry", "run", "python", "-m", "admin", "--asset_price", "--currency_value", "--update_category_history"]
