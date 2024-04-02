@@ -73,4 +73,5 @@ SELECT
 FROM
     CurrentCategoryValue
 FULL OUTER JOIN CurrentCategoryBankValue
-    ON CurrentCategoryValue.category_id = CurrentCategoryBankValue.category_id;
+    ON CurrentCategoryValue.category_id = CurrentCategoryBankValue.category_id
+ON CONFLICT (tr_date, category_id) DO UPDATE SET value = EXCLUDED.value;
