@@ -5,7 +5,7 @@ WORKDIR /app
 COPY ./front .
 COPY .env .
 
-RUN npm ci --only=production
+RUN npm ci
 
 RUN npm run build
 
