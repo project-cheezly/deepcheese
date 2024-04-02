@@ -3,6 +3,7 @@ FROM node:lts-alpine3.19 AS Cheeseboard
 WORKDIR /app
 
 COPY ./front .
+COPY .env .
 
 RUN npm ci --only=production
 

@@ -11,12 +11,18 @@ with open(config_path, 'rb') as f:
     uri = __config['uri']
     tr_id = __config['tr-id']
 
-with open(secret_path, 'rb') as f:
-    secret = tomllib.load(f)
+try:
+    with open(secret_path, 'rb') as f:
+        secret = tomllib.load(f)
 
-    if secret.get('appkey') is None:
-        secret['appkey'] = os.environ.get('KIS_APP_KEY')
-    if secret.get('appsecret') is None:
-        secret['appsecret'] = os.environ.get('KIS_APP_SECRET')
+        if secret.get('appkey') is None:
+            secret['appkey'] = os.environ.get('KIS_APP_KEY')
+        if secret.get('appsecret') is None:
+            secret['appsecret'] = os.environ.get('KIS_APP_SECRET')
+except FileNotFoundError:
+    secret = {
+        'appkey': os.environ.get('KIS_APP_KEY'),
+        'appsecret': os.environ.get('KIS_APP_SECRET')
+    }
 
 __all__ = ['uri', 'tr_id', 'secret']

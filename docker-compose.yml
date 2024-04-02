@@ -1,17 +1,17 @@
 version: '3.8'
 
 services:
-  Cheeseboard:
-    container_name: Cheeseboard
-    image: Cheeseboard
+  cheeseboard:
+    container_name: cheeseboard
+    image: cheeseboard
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: front/Dockerfile
     user: "node"
     environment:
       - NODE_ENV=production
     env_file:
-      - front/.env
+      - .env
     restart: unless-stopped
     ports:
       - 80:80

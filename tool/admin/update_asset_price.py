@@ -41,12 +41,12 @@ def update_current_stock_price():
 
         match kis_code:
             case 'KOSPI' | 'KOSDAQ':
-                # if datetime.datetime.now().hour > 16 or datetime.datetime.now().hour < 9:
-                #     continue
+                if datetime.datetime.now().hour > 16 or datetime.datetime.now().hour < 9:
+                    continue
                 stock_price = kis.domestic.inquire_price(code)['output']['stck_prpr']
             case _:
-                # if 5 < datetime.datetime.now().hour < 22:
-                #     continue
+                if 5 < datetime.datetime.now().hour < 22:
+                    continue
                 stock_price = kis.overseas.inquire_price(kis_code, code)['output']['last']
 
         targets.append((day, asset_id, stock_price))
