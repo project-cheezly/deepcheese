@@ -28,4 +28,7 @@ if args.currency_value:
     update_current_currency(db, kis)
 
 if args.update_category_history:
-    update_category_value(db, kis)
+    update_category_value(db)
+
+db.conn.execute("INSERT INTO update_log (target, updated_timestamp) VALUES ('cheeseboard-cron', NOW()) ON CONFLICT (target) DO UPDATE SET updated_timestamp = NOW()")
+db.conn.commit()
