@@ -12,17 +12,7 @@ class KIS:
         self.__auth = KISAuth(self.__client)
 
         token = self.__auth.get_access_token()
-        base_header = self.__get_base_header(token)
+        base_header = self.__auth.get_base_header(token)
 
         self.domestic = KISDomestic(self.__client, base_header)
         self.overseas = KISOverseas(self.__client, base_header)
-
-
-    @staticmethod
-    def __get_base_header(token: AccessToken) -> dict[str, str]:
-        return {
-            "content-type": "application/json; charset=utf-8",
-            "authorization": "Bearer " + token.value,
-            "appkey": secret["appkey"],
-            "appsecret": secret["appsecret"]
-        }

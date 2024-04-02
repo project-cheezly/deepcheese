@@ -32,14 +32,41 @@ class KISAuth:
         except FileNotFoundError:
             return None
 
-    @staticmethod
-    def __validate_access_token(access_token: AccessToken | None) -> AccessToken | None:
+    def __validate_access_token(self, access_token: AccessToken | None) -> AccessToken | None:
         if access_token is None:
             return access_token
-        if access_token.expires_at < datetime.datetime.now() - datetime.timedelta(hours=6):
+        if access_token.expires_at < datetime.datetime.now() + datetime.timedelta(hours=6):
             return None
 
+        access_token = self.__check_access_token(access_token)
         return access_token
+
+    def __check_access_token(self, access_token: AccessToken | None) -> AccessToken | None:
+        endpoint = uri["origin"]["production"] + uri["domestic-stock"]["inquire-price"]
+        header = {"tr_id": tr_id["domestic-stock"]["inquire-price"]}
+        header.update(self.get_base_header(access_token))
+
+        params = {
+            "FID_COND_MRKT_DIV_CODE": "J",
+            "FID_INPUT_ISCD": "000060"
+        }
+
+        response = self.__client.get(
+            endpoint,
+            params=params,
+            headers=header
+        ).json()
+
+        return access_token if response["msg_cd"] == "MCA00000" else None
+
+    @staticmethod
+    def get_base_header(token: AccessToken) -> dict[str, str]:
+        return {
+            "content-type": "application/json; charset=utf-8",
+            "authorization": "Bearer " + token.value,
+            "appkey": secret["appkey"],
+            "appsecret": secret["appsecret"]
+        }
 
     def __get_access_token(self) -> AccessToken:
         endpoint = uri["origin"]["production"] + uri["OAuth"]["access_token_request"]
