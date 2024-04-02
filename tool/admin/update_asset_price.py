@@ -45,7 +45,7 @@ def update_current_stock_price():
                     continue
                 stock_price = kis.domestic.inquire_price(code)['output']['stck_prpr']
             case _:
-                if 5 < datetime.datetime.now().hour < 22:
+                if 6 < datetime.datetime.now().hour < 22:
                     continue
                 stock_price = kis.overseas.inquire_price(kis_code, code)['output']['last']
 
