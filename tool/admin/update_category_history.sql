@@ -64,6 +64,17 @@ CurrentCategoryBankValue AS (
     INNER JOIN CurrencyLatestValue
         ON bank_balance.currency_id = CurrencyLatestValue.currency_id
     GROUP BY bank_balance.category_id
+),
+I AS (
+    INSERT INTO realtime_category_history (tr_timestamp, category_id, value)
+    SELECT
+        NOW(),
+        COALESCE(CurrentCategoryValue.category_id, CurrentCategoryBankValue.category_id) AS category_id,
+        COALESCE(CurrentCategoryValue.value, 0) + COALESCE(CurrentCategoryBankValue.value, 0) AS value
+    FROM
+        CurrentCategoryValue
+    FULL OUTER JOIN CurrentCategoryBankValue
+        ON CurrentCategoryValue.category_id = CurrentCategoryBankValue.category_id
 )
 INSERT INTO category_history (tr_date, category_id, value)
 SELECT
