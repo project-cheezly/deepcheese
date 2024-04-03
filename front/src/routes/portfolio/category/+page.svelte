@@ -7,7 +7,6 @@
     import CreateDialogContent from "./CreateDialogContent.svelte";
 
     let categories = $page.data.categories;
-    console.log(categories);
 </script>
 
 <div class="container">

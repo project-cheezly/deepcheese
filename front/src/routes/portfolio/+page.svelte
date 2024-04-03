@@ -12,5 +12,8 @@
     <h2>
         <a href="/portfolio/bank" class="block main-content">입출금</a>
     </h2>
+    <h2>
+        <a href="/portfolio/analysis" class="block main-content">분석</a>
+    </h2>
     <div/>
 </div>
