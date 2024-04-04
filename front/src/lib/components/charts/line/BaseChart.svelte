@@ -63,7 +63,7 @@
     $: {
         d3.select(xAxisLine)
             .call(d3.axisBottom(x)
-                .ticks(timeScale === 'time' ? 4 : d3.utcDay)
+                .ticks(timeScale === 'time' ? 4 : d3.utcMonth)
                 .tickFormat(timeScale === 'time' ? localeMultiFormat : multiFormat)
                 .tickSize(0)
                 .tickPadding(8)
@@ -84,7 +84,7 @@
                 .tickPadding(6));
     }
 
-    $: xTicks = x.ticks(timeScale === 'time' ? 4 : d3.utcDay);
+    $: xTicks = x.ticks(timeScale === 'time' ? 4 : d3.utcMonth);
     $: yTicks = y.ticks(4);
 
     // 꺾은선 생성
@@ -99,7 +99,7 @@
         <path
             d={line(category_data)}
             fill="transparent"
-            stroke="rgb(35, 35, 35)"
+            stroke="rgb(100, 100, 100)"
             stroke-width="3"
             stroke-linecap="round"
             stroke-linejoin="round"

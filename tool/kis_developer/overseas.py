@@ -64,13 +64,13 @@ class KISOverseas:
         return self.__client.get(endpoint, headers=header, params=params).json()
 
     def inquire_daily_price(self, market_code: str, stock_code: str, end_date: datetime.date):
-        return self.__inquire_periodic_price(market_code, stock_code, end_date, 'D')
+        return self.__inquire_periodic_price(market_code, stock_code, end_date, '0')
 
     def inquire_weekly_price(self, market_code: str, stock_code: str, end_date: datetime.date):
-        return self.__inquire_periodic_price(market_code, stock_code, end_date, 'W')
+        return self.__inquire_periodic_price(market_code, stock_code, end_date, '1')
 
     def inquire_monthly_price(self, market_code: str, stock_code: str, end_date: datetime.date):
-        return self.__inquire_periodic_price(market_code, stock_code, end_date, 'M')
+        return self.__inquire_periodic_price(market_code, stock_code, end_date, '2')
 
     def __inquire_periodic_price(self, market_code: str, stock_code: str, end_date: datetime.date, period_div_code: str):
         header = {"tr_id": tr_id["overseas-stock"]["inquire-periodic-price"]}

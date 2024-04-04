@@ -8,7 +8,7 @@ from .overseas import KISOverseas
 
 class KIS:
     def __init__(self):
-        self.__client = httpx.Client()
+        self.__client = httpx
         self.__auth = KISAuth(self.__client)
 
         token = self.__auth.get_access_token()
