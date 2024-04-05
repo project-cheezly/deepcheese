@@ -1,0 +1,26 @@
+[uri]
+production = "https://openapi.koreainvestment.com:9443"
+sandbox = "https://openapivts.koreainvestment.com:29443"
+
+[endpoint]
+
+[endpoint.auth]
+publish_token = "/oauth2/tokenP"
+
+[endpoint.domestic]
+inquire_stock_price = "/uapi/domestic-stock/v1/quotations/inquire-price"
+inquire_daily_stock_price = "/uapi/domestic-stock/v1/quotations/inquire-daily-price"
+inquire_interval_stock_price = "/uapi/domestic-stock/v1/quotations/inquire-daily-itemchartprice"
+
+[endpoint.overseas]
+inquire_stock_price = "/uapi/overseas-price/v1/quotations/price"
+
+[tr]
+
+[tr.domestic]
+inquire_stock_price = "FHKST01010100"
+inquire_daily_stock_price = "FHKST01010400"
+inquire_interval_stock_price = "FHKST03010100"
+
+[tr.overseas]
+inquire_stock_price = "HHDFS00000300"
