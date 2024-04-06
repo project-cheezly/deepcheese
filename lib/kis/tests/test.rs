@@ -5,7 +5,7 @@ mod integrated_test {
 
     #[tokio::test]
     async fn test_integrated_domestic() -> Result<(), Box<dyn std::error::Error>> {
-        let kis = KIS::new()?;
+        let kis = KIS::new().await?;
 
         let code = "005930";
         let crit_date = NaiveDate::parse_from_str("2021-01-01", "%Y-%m-%d")?;
@@ -31,9 +31,9 @@ mod integrated_test {
 
     #[tokio::test]
     async fn test_integrated_overseas() -> Result<(), Box<dyn std::error::Error>> {
-        let kis = KIS::new()?;
+        let kis = KIS::new().await?;
 
-        let code = "APPL";
+        let code = "TSLA";
         let market_code = kis::MarketCode::NAS;
 
         let stock_price = kis.overseas.inquire_stock_price(code, market_code);

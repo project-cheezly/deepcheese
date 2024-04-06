@@ -16,11 +16,11 @@ pub struct KIS {
 
 impl KIS {
     /// 새로운 KIS 구조체를 생성합니다.
-    pub fn new() -> Result<Self, Box<dyn std::error::Error>> {
+    pub async fn new() -> Result<Self, Box<dyn std::error::Error>> {
         let config = Arc::new(config::load());
 
         let rate_limiter = Arc::new(Mutex::new(RateLimiter::new()));
-        let auth = Arc::new(Mutex::new(KISAuth::new(config.clone())));
+        let auth = Arc::new(Mutex::new(KISAuth::new(config.clone()).await));
 
         Ok(KIS {
             domestic: KISDomestic::new(rate_limiter.clone(), auth.clone(), config.clone()),

@@ -21,8 +21,8 @@ pub(crate) struct KISAuth {
 }
 
 impl KISAuth {
-    pub(crate) fn new(config: Arc<AppConfig>) -> Self {
-        let access_token = get_token(&*config).unwrap();
+    pub(crate) async fn new(config: Arc<AppConfig>) -> Self {
+        let access_token = get_token(&*config).await.unwrap();
 
         KISAuth {
             config,
@@ -30,11 +30,11 @@ impl KISAuth {
         }
     }
 
-    pub(crate) fn get_header_map(&self) -> Result<HeaderMap, Box<dyn std::error::Error>> {
+    pub(crate) async fn get_header_map(&self) -> Result<HeaderMap, Box<dyn std::error::Error>> {
         let mut token = self.access_token.borrow_mut();
 
         if !token.is_validate() {
-            *token = refresh_token(&self.config).unwrap();
+            *token = refresh_token(&self.config).await?;
         }
 
         let mut headers = HeaderMap::new();
@@ -84,13 +84,13 @@ struct TokenResponse {
 /// ## Error
 ///
 /// 토큰 발급에 실패하거나 토큰 파일을 읽거나 쓰는 중 오류가 발생할 경우 에러를 반환합니다.
-pub fn get_token(config: &AppConfig) -> Result<AccessToken, Box<dyn std::error::Error>> {
+pub async fn get_token(config: &AppConfig) -> Result<AccessToken, Box<dyn std::error::Error>> {
     let loaded_token = load_token()
         .and_then(|token| token.validate_token());
 
     match loaded_token {
         Some(token) => Ok(token),
-        None => refresh_token(config)
+        None => refresh_token(config).await
     }
 }
 
@@ -127,14 +127,14 @@ fn get_token_path() -> std::path::PathBuf {
     token_path
 }
 
-fn refresh_token(config: &AppConfig) -> Result<AccessToken, Box<dyn std::error::Error>> {
-    let new_token = publish_token(config)?;
+async fn refresh_token(config: &AppConfig) -> Result<AccessToken, Box<dyn std::error::Error>> {
+    let new_token = publish_token(config).await?;
     save_token(&new_token)?;
 
     Ok(new_token)
 }
 
-fn publish_token(config: &AppConfig) -> Result<AccessToken, Box<dyn std::error::Error>> {
+async fn publish_token(config: &AppConfig) -> Result<AccessToken, Box<dyn std::error::Error>> {
     let body = HashMap::from([
         ("grant_type", "client_credentials"),
         ("appkey", &config.auth.app_id),
@@ -152,13 +152,13 @@ fn publish_token(config: &AppConfig) -> Result<AccessToken, Box<dyn std::error::
         }
     };
 
-    let client = reqwest::blocking::Client::new();
+    let client = reqwest::Client::new();
 
     let res_result = client.post(url)
         .json(&body)
         .send();
 
-    let response = match res_result {
+    let response = match res_result.await {
         Ok(res) if !res.status().is_success() => {
             warn!("토큰을 발급하는 중 오류가 발생했습니다: {:?}", res);
             return Err("토큰 발급 실패".into());
@@ -171,7 +171,7 @@ fn publish_token(config: &AppConfig) -> Result<AccessToken, Box<dyn std::error::
     };
 
     info!("토큰을 발급받았습니다.");
-    Ok(parse_token(response.json::<TokenResponse>()?))
+    Ok(parse_token(response.json::<TokenResponse>().await?))
 }
 
 fn parse_token(token_response: TokenResponse) -> AccessToken {

@@ -32,7 +32,7 @@ impl KISOverseas {
     }
 
     async fn get_default_header(&self) -> reqwest::header::HeaderMap {
-        self.auth.lock().await.get_header_map().unwrap()
+        self.auth.lock().await.get_header_map().await.unwrap()
     }
 }
 
