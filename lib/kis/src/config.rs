@@ -51,6 +51,10 @@ pub struct EndpointDomesticConfig {
 pub struct EndpointOverseasConfig {
     /// 해외주식 현재가 조회
     pub inquire_stock_price: String,
+    /// 해외주식 기간별 시세 조회
+    pub inquire_interval_stock_price: String,
+    /// 해외 지수/환율 기간별 시세 조회
+    pub inquire_interval_index_value: String,
 }
 
 #[derive(Deserialize, Debug)]
@@ -75,6 +79,8 @@ pub struct TrDomesticConfig {
 #[derive(Deserialize, Debug)]
 pub struct TrOverseasConfig {
     pub inquire_stock_price: String,
+    pub inquire_interval_stock_price: String,
+    pub inquire_interval_index_value: String,
 }
 
 pub fn load() -> AppConfig {

@@ -1,6 +1,8 @@
+use std::error::Error;
 use serde::Deserialize;
 use chrono::NaiveDate;
 use reqwest::Url;
+use crate::CandleData;
 
 use super::{DomesticStockCandle, KISDomestic};
 use crate::kis_parse::parse_to_i32;
@@ -23,10 +25,10 @@ impl KISDomestic {
     /// ## Arguments
     /// - `code`: 종목 코드
     /// - `date`: 기준 일자
-    pub async fn inquire_daily_stock_price(&self, code: &str, date: NaiveDate)
-        -> Result<Vec<DomesticStockCandle>, Box<dyn std::error::Error>>
+    pub async fn inquire_daily_stock_price(&self, code: &str, start: NaiveDate, end: NaiveDate)
+        -> Result<CandleData<DomesticStockCandle>, Box<dyn Error>>
     {
-        self.inquire_interval_stock_price(code, date, 'D').await
+        self.inquire_interval_stock_price_loop(code, start, end, 'D').await
     }
 
     /// 국내 주식 주별 시세를 조회합니다.
@@ -35,10 +37,10 @@ impl KISDomestic {
     /// ## Arguments
     /// - `code`: 종목 코드
     /// - `date`: 기준 일자
-    pub async fn inquire_weekly_stock_price(&self, code: &str, date: NaiveDate)
-        -> Result<Vec<DomesticStockCandle>, Box<dyn std::error::Error>>
+    pub async fn inquire_weekly_stock_price(&self, code: &str, start: NaiveDate, end: NaiveDate)
+        -> Result<CandleData<DomesticStockCandle>, Box<dyn Error>>
     {
-        self.inquire_interval_stock_price(code, date, 'W').await
+        self.inquire_interval_stock_price_loop(code, start, end, 'W').await
     }
 
     /// 국내 주식 월별 시세를 조회합니다.
@@ -46,15 +48,51 @@ impl KISDomestic {
     ///
     /// ## Arguments
     /// - `code`: 종목 코드
-    /// - `date`: 기준 일자
-    pub async fn inquire_monthly_stock_price(&self, code: &str, date: NaiveDate)
-        -> Result<Vec<DomesticStockCandle>, Box<dyn std::error::Error>>
+    /// - `start`: 시작 일자
+    /// - `end`: 종료 일자
+    pub async fn inquire_monthly_stock_price(&self, code: &str, start: NaiveDate, end: NaiveDate)
+        -> Result<CandleData<DomesticStockCandle>, Box<dyn Error>>
     {
-        self.inquire_interval_stock_price(code, date, 'M').await
+        self.inquire_interval_stock_price_loop(code, start, end, 'M').await
+    }
+
+    async fn inquire_interval_stock_price_loop(
+        &self,
+        stock_code: &str,
+        start_date: NaiveDate,
+        end_date: NaiveDate,
+        interval: char
+    ) -> Result<CandleData<DomesticStockCandle>, Box<dyn Error>>
+    {
+        let (mut continue_flag, mut result) = self.inquire_interval_stock_price(
+            stock_code,
+            end_date,
+            interval
+        ).await?;
+
+        while continue_flag {
+            if let Some(earliest_date) = result.earliest_date() {
+                if earliest_date <= start_date {
+                    break;
+                }
+            }
+
+            let (cont, data) = self.inquire_interval_stock_price(
+                stock_code,
+                result.earliest_date().unwrap_or(end_date),
+                interval
+            ).await?;
+
+            continue_flag = cont;
+            result.concat(data);
+        }
+
+        result.truncate(start_date);
+        Ok(result)
     }
 
     async fn inquire_interval_stock_price(&self, code: &str, date: NaiveDate, interval: char)
-        -> Result<Vec<DomesticStockCandle>, Box<dyn std::error::Error>>
+        -> Result<(bool, CandleData<DomesticStockCandle>), Box<dyn std::error::Error>>
     {
         self.wait().await;
 
@@ -96,6 +134,9 @@ impl KISDomestic {
             ).into());
         }
 
-        Ok(response.output2.unwrap())
+        let result = CandleData::new(response.output2.unwrap());
+        let continuous = result.len() != 0;
+
+        Ok((continuous, result))
     }
 }

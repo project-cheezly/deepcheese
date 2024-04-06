@@ -1,4 +1,5 @@
 use std::num::IntErrorKind;
+use chrono::NaiveDate;
 use serde::de::Visitor;
 use serde::Deserializer;
 
@@ -49,6 +50,32 @@ where
                 Ok(v) => Ok(v),
                 Err(e) if *e.kind() == IntErrorKind::Empty => Ok(0),
                 _ => Err(serde::de::Error::custom("Failed to parse i32"))
+            }
+        }
+    }
+
+    deserializer.deserialize_str(ParseVisitor)
+}
+
+pub(crate) fn parse_to_naive_date<'de, D>(deserializer: D) -> Result<NaiveDate, D::Error>
+where
+    D: Deserializer<'de>
+{
+    struct ParseVisitor;
+    impl<'de> Visitor<'de> for ParseVisitor {
+        type Value = NaiveDate;
+
+        fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+            formatter.write_str("a string")
+        }
+
+        fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+        where
+            E: serde::de::Error,
+        {
+            match NaiveDate::parse_from_str(v, "%Y%m%d") {
+                Ok(v) => Ok(v),
+                Err(_) => Ok(NaiveDate::from_ymd_opt(1970, 1, 1).unwrap()),
             }
         }
     }
