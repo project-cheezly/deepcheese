@@ -5,6 +5,7 @@ use reqwest::Url;
 use super::{KISOverseas, OverseasStockCandle};
 use crate::kis_parse::parse_to_i32;
 use crate::{CandleData, MarketCode};
+use crate::config::{endpoint, tr, uri};
 
 #[derive(Deserialize, Debug)]
 struct Response {
@@ -142,13 +143,13 @@ impl KISOverseas {
 
         let url = Url::parse(format!(
             "{}{}",
-            &self.config.kis.uri.production,
-            &self.config.kis.endpoint.overseas.inquire_interval_stock_price
+            uri::PRODUCTION,
+            endpoint::OVERSEAS_INQUIRE_INTERVAL_STOCK_PRICE
         ).as_ref())?;
 
         let response = client.get(url)
             .headers(auth_header.await)
-            .header("tr_id", &self.config.kis.tr.overseas.inquire_interval_stock_price)
+            .header("tr_id", tr::OVERSEAS_INQUIRE_INTERVAL_STOCK_PRICE)
             .query(&[
                 ("AUTH", ""),
                 ("EXCD", market_code.as_ref()),

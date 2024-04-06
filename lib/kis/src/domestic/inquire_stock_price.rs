@@ -1,5 +1,6 @@
 use serde::Deserialize;
 use reqwest::Url;
+use crate::config::{endpoint, tr, uri};
 
 use super::KISDomestic;
 use crate::kis_parse::parse_to_i32;
@@ -42,13 +43,13 @@ impl KISDomestic {
         let client = reqwest::Client::new();
         let uri = Url::parse(format!(
             "{}{}",
-            &self.config.kis.uri.production,
-            &self.config.kis.endpoint.domestic.inquire_stock_price
+            uri::PRODUCTION,
+            endpoint::DOMESTIC_INQUIRE_STOCK_PRICE
         ).as_ref())?;
 
         let response = client.get(uri)
             .headers(auth_header.await)
-            .header("tr_id", &self.config.kis.tr.domestic.inquire_stock_price)
+            .header("tr_id", tr::DOMESTIC_INQUIRE_STOCK_PRICE)
             .query(&[
                 ("FID_COND_MRKT_DIV_CODE", "J"),
                 ("FID_INPUT_ISCD", code)

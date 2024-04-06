@@ -13,7 +13,7 @@ use std::{println as info, println as debug, println as warn};
 use std::cell::RefCell;
 use reqwest::header::HeaderMap;
 
-use crate::config::AppConfig;
+use crate::config::{AppConfig, endpoint, uri};
 
 pub(crate) struct KISAuth {
     config: Arc<AppConfig>,
@@ -141,8 +141,8 @@ async fn publish_token(config: &AppConfig) -> Result<AccessToken, Box<dyn std::e
         ("appsecret", &config.auth.app_secret),
     ]);
 
-    let url_result = Url::parse(&config.kis.uri.production)
-        .and_then(|url| url.join(&config.kis.endpoint.auth.publish_token));
+    let url_result = Url::parse(&uri::PRODUCTION)
+        .and_then(|url| url.join(&endpoint::AUTH_PUBLISH_TOKEN));
 
     let url = match url_result {
         Ok(url) => url,

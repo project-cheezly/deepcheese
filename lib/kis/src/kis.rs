@@ -23,8 +23,8 @@ impl KIS {
         let auth = Arc::new(Mutex::new(KISAuth::new(config.clone()).await));
 
         Ok(KIS {
-            domestic: KISDomestic::new(rate_limiter.clone(), auth.clone(), config.clone()),
-            overseas: KISOverseas::new(rate_limiter, auth, config),
+            domestic: KISDomestic::new(rate_limiter.clone(), auth.clone()),
+            overseas: KISOverseas::new(rate_limiter, auth),
         })
     }
 }

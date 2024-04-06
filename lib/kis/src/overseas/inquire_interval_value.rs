@@ -2,6 +2,7 @@ use serde::Deserialize;
 use chrono::NaiveDate;
 use reqwest::Url;
 use crate::CandleData;
+use crate::config::{endpoint, tr, uri};
 
 use super::{KISOverseas, OverseasIndexCandle};
 use crate::kis_parse::parse_to_i32;
@@ -203,13 +204,13 @@ impl KISOverseas {
 
         let url = Url::parse(format!(
             "{}{}",
-            &self.config.kis.uri.production,
-            &self.config.kis.endpoint.overseas.inquire_interval_index_value
+            uri::PRODUCTION,
+            endpoint::OVERSEAS_INQUIRE_INTERVAL_INDEX_VALUE
         ).as_ref())?;
 
         let response = client.get(url)
             .headers(auth_header.await)
-            .header("tr_id", &self.config.kis.tr.overseas.inquire_interval_index_value)
+            .header("tr_id", tr::OVERSEAS_INQUIRE_INTERVAL_INDEX_VALUE)
             .query(&[
                 ("FID_COND_MRKT_DIV_CODE", div_code.to_string().as_str()),
                 ("FID_INPUT_ISCD", code),

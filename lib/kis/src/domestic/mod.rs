@@ -5,7 +5,6 @@ use chrono::NaiveDate;
 use serde::Deserialize;
 use tokio::sync::Mutex;
 
-use crate::config::AppConfig;
 use crate::auth::KISAuth;
 use crate::Candle;
 use crate::rate_limiter::RateLimiter;
@@ -13,20 +12,17 @@ use crate::kis_parse::{parse_to_naive_date, parse_to_i32};
 
 pub struct KISDomestic {
     rate_limiter: Arc<Mutex<RateLimiter>>,
-    auth: Arc<Mutex<KISAuth>>,
-    config: Arc<AppConfig>,
+    auth: Arc<Mutex<KISAuth>>
 }
 
 impl KISDomestic {
     pub(crate) fn new(
         rate_limiter: Arc<Mutex<RateLimiter>>,
-        auth: Arc<Mutex<KISAuth>>,
-        config: Arc<AppConfig>
+        auth: Arc<Mutex<KISAuth>>
     ) -> Self {
         KISDomestic {
             rate_limiter,
-            auth,
-            config
+            auth
         }
     }
 

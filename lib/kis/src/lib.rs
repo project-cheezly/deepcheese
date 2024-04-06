@@ -9,6 +9,8 @@ mod domestic;
 mod kis_parse;
 mod overseas;
 
+pub use kis::KIS;
+
 #[derive(Clone, Copy)]
 pub enum MarketCode {
     /// 홍콩

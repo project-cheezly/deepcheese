@@ -1,5 +1,6 @@
 use serde::Deserialize;
 use reqwest::Url;
+use crate::config::{endpoint, tr, uri};
 
 use super::KISOverseas;
 use crate::kis_parse::{parse_to_f64, parse_to_i32};
@@ -40,13 +41,13 @@ impl KISOverseas {
         let client = reqwest::Client::new();
         let uri = Url::parse(format!(
             "{}{}",
-            &self.config.kis.uri.production,
-            &self.config.kis.endpoint.overseas.inquire_stock_price
+            uri::PRODUCTION,
+            endpoint::OVERSEAS_INQUIRE_STOCK_PRICE
         ).as_ref())?;
 
         let response = client.get(uri)
             .headers(auth_header.await)
-            .header("tr_id", &self.config.kis.tr.overseas.inquire_stock_price)
+            .header("tr_id", tr::OVERSEAS_INQUIRE_STOCK_PRICE)
             .query(&[
                 ("AUTH", ""),
                 ("EXCD", market_code.get_code()),
