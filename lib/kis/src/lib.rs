@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::str::FromStr;
 use chrono::NaiveDate;
 
 mod config;
@@ -39,6 +40,26 @@ impl MarketCode {
             MarketCode::BAQ => "BAQ",
             MarketCode::AMS => "AMS",
             MarketCode::BAA => "BAA"
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct MarketCodeParseError;
+
+impl FromStr for MarketCode {
+    type Err = MarketCodeParseError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "HKS" => Ok(Self::HKS),
+            "NYS" => Ok(Self::NYS),
+            "BAY" => Ok(Self::BAY),
+            "NAS" => Ok(Self::NAS),
+            "BAQ" => Ok(Self::BAQ),
+            "AMS" => Ok(Self::AMS),
+            "BAA" => Ok(Self::BAA),
+            _ => Err(MarketCodeParseError)
         }
     }
 }
