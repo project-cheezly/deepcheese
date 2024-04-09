@@ -7,6 +7,11 @@ const UPDATE_PRICE_QUERY: &str = r#"
     INSERT INTO asset_history (tr_date, asset_id, value)
 "#;
 
+const UPDATE_PRICE_CONFLICT_QUERY: &str = r#"
+    ON CONFLICT (tr_date, asset_id)
+    DO UPDATE SET value = EXCLUDED.value
+"#;
+
 const GET_STOCK_CODE_QUERY: &str = r#"
     SELECT market.kis_code, asset.code, asset.id
     FROM asset
@@ -58,10 +63,7 @@ pub async fn update_current_stock_price(pool: &PgPool, kis: &KIS)
         }
     });
 
-    builder.push(r#"
-        ON CONFLICT (tr_date, asset_id)
-        DO UPDATE SET value = EXCLUDED.value
-    "#);
+    builder.push(UPDATE_PRICE_CONFLICT_QUERY);
 
     let _ = builder.build().execute(pool).await?;
 

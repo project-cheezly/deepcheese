@@ -1,8 +1,7 @@
-use kis::KIS;
 use sqlx::{Error, Executor, PgPool, Postgres};
 use sqlx::postgres::PgQueryResult;
 
-pub async fn update_category_history(pool: &PgPool, kis: &KIS)
+pub async fn update_category_history(pool: &PgPool)
     -> Result<PgQueryResult, Error>
 {
     let mut conn = pool.acquire().await?;
