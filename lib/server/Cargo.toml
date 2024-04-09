@@ -7,8 +7,9 @@ edition = "2021"
 
 [dependencies]
 tokio = { version = "1.37.0", features = ["full"] }
-sqlx = { version = "0.7.4", features = ["runtime-tokio", "postgres", "chrono"] }
+sqlx = { version = "0.7.4", features = ["runtime-tokio", "postgres", "chrono", "bigdecimal"] }
 config = { version = "0.14.0" }
 chrono = { version = "0.4.37" }
 futures = "0.3.30"
+num-traits = "0.2.18"
 kis = { path = "../kis" }

@@ -1,4 +1,3 @@
-use chrono::Timelike;
 use futures::future::join_all;
 use kis::KIS;
 use sqlx::{Executor, PgPool, QueryBuilder, Row};
@@ -28,11 +27,6 @@ struct CurrencyValue {
 pub async fn update_currency_value(pool: &PgPool, kis: &KIS)
     -> Result<(), Box<dyn std::error::Error>>
 {
-    let current_time = chrono::offset::Utc::now();
-    if 9 > current_time.hour() && current_time.hour() > 15 {
-        return Ok(());
-    }
-
     let mut conn = pool.acquire().await?;
 
     let currency_values = join_all(conn.fetch_all(GET_TARGET_QUERY).await?
@@ -66,12 +60,26 @@ pub async fn update_currency_value(pool: &PgPool, kis: &KIS)
 
 async fn get_currency_value(currency: Currency, kis: &KIS) -> Result<CurrencyValue, Box<dyn std::error::Error>> {
     let value = kis.overseas.inquire_daily_forex_value(
-        &currency.code,
+        "FX@KRW",
         chrono::offset::Utc::now().date_naive(),
         chrono::offset::Utc::now().date_naive()).await?;
 
     Ok(CurrencyValue {
         id: currency.id,
-        value: value.get(chrono::offset::Utc::now().date_naive()).unwrap().종가,
+        value: value.get_recent(chrono::offset::Utc::now().date_naive()).unwrap().종가,
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::database::connect_to_database;
+    use super::*;
+
+    #[tokio::test]
+    async fn test_update_currency_value() {
+        let pool = connect_to_database().await.unwrap();
+        let kis = KIS::new().await.unwrap();
+
+        update_currency_value(&pool, &kis).await.unwrap();
+    }
 }

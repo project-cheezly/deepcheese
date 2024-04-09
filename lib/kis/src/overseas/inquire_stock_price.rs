@@ -50,7 +50,7 @@ impl KISOverseas {
             .header("tr_id", tr::OVERSEAS_INQUIRE_STOCK_PRICE)
             .query(&[
                 ("AUTH", ""),
-                ("EXCD", market_code.get_code()),
+                ("EXCD", &market_code.to_string()),
                 ("SYMB", stock_code)
             ])
             .send()

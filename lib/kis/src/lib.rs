@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::fmt::Display;
 use std::str::FromStr;
 use chrono::NaiveDate;
 
@@ -30,9 +31,9 @@ pub enum MarketCode {
     BAA
 }
 
-impl MarketCode {
-    fn get_code(&self) -> &str {
-        match self {
+impl Display for MarketCode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let code = match self {
             MarketCode::HKS => "HKS",
             MarketCode::NYS => "NYS",
             MarketCode::BAY => "BAY",
@@ -40,12 +41,22 @@ impl MarketCode {
             MarketCode::BAQ => "BAQ",
             MarketCode::AMS => "AMS",
             MarketCode::BAA => "BAA"
-        }
+        };
+
+        write!(f, "{}", code)
     }
 }
 
 #[derive(Debug, PartialEq, Eq)]
-pub struct MarketCodeParseError;
+pub struct MarketCodeParseError(String);
+
+impl Display for MarketCodeParseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Invalid market code: {}", self.0)
+    }
+}
+
+impl std::error::Error for MarketCodeParseError {}
 
 impl FromStr for MarketCode {
     type Err = MarketCodeParseError;
@@ -59,7 +70,7 @@ impl FromStr for MarketCode {
             "BAQ" => Ok(Self::BAQ),
             "AMS" => Ok(Self::AMS),
             "BAA" => Ok(Self::BAA),
-            _ => Err(MarketCodeParseError)
+            _ => Err(MarketCodeParseError(s.to_string()))
         }
     }
 }
@@ -78,13 +89,30 @@ impl AsRef<str> for MarketCode {
     }
 }
 
-pub trait Candle: Eq + PartialOrd + PartialEq {
-    fn get_date(&self) -> NaiveDate;
+pub trait Candle: Eq + PartialOrd + PartialEq + Clone + Copy {
+    type Value;
+
+    fn date(&self) -> NaiveDate;
+    fn 시가(&self) -> Self::Value;
+    fn 고가(&self) -> Self::Value;
+    fn 저가(&self) -> Self::Value;
+    fn 종가(&self) -> Self::Value;
 }
 
 #[derive(Debug)]
 pub struct CandleData<T> {
     data: BTreeMap<NaiveDate, T>,
+}
+
+impl<T> IntoIterator for CandleData<T>
+    where T: Candle
+{
+    type Item = (NaiveDate, T);
+    type IntoIter = std::collections::btree_map::IntoIter<NaiveDate, T>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.data.into_iter()
+    }
 }
 
 impl<T: Candle> CandleData<T>
@@ -94,7 +122,7 @@ impl<T: Candle> CandleData<T>
         let mut data = BTreeMap::new();
 
         for candle in candles {
-            data.insert(candle.get_date(), candle);
+            data.insert(candle.date(), candle);
         }
 
         Self { data }
@@ -116,7 +144,7 @@ impl<T: Candle> CandleData<T>
 
     pub fn len(&self) -> usize {
         self.data.len()
-}
+    }
 
     /// 현재 일자의 주가 정보를 가져옵니다.
     ///

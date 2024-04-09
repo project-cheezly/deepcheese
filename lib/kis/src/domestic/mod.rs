@@ -35,7 +35,7 @@ impl KISDomestic {
     }
 }
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Copy, Clone)]
 pub struct DomesticStockCandle {
     #[serde(rename = "stck_bsop_date", deserialize_with = "parse_to_naive_date")]
     pub 일자: NaiveDate,
@@ -64,9 +64,18 @@ impl PartialOrd for DomesticStockCandle {
 }
 
 impl Candle for DomesticStockCandle {
-    fn get_date(&self) -> NaiveDate {
+    type Value = i32;
+    fn date(&self) -> NaiveDate {
         self.일자
     }
+
+    fn 시가(&self) -> Self::Value { self.시가 }
+
+    fn 고가(&self) -> Self::Value { self.고가 }
+
+    fn 저가(&self) -> Self::Value { self.저가 }
+
+    fn 종가(&self) -> Self::Value { self.종가 }
 }
 
 mod inquire_stock_price;

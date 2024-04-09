@@ -10,14 +10,14 @@ use reqwest::Url;
 use log::{debug, info, warn};
 #[cfg(test)]
 use std::{println as info, println as debug, println as warn};
-use std::cell::RefCell;
 use reqwest::header::HeaderMap;
+use tokio::sync::RwLock;
 
 use crate::config::{AppConfig, endpoint, uri};
 
 pub(crate) struct KISAuth {
     config: Arc<AppConfig>,
-    access_token: RefCell<AccessToken>
+    access_token: Arc<RwLock<AccessToken>>
 }
 
 impl KISAuth {
@@ -26,12 +26,12 @@ impl KISAuth {
 
         KISAuth {
             config,
-            access_token: RefCell::new(access_token),
+            access_token: Arc::new(RwLock::new(access_token)),
         }
     }
 
     pub(crate) async fn get_header_map(&self) -> Result<HeaderMap, Box<dyn std::error::Error>> {
-        let mut token = self.access_token.borrow_mut();
+        let mut token = self.access_token.write().await;
 
         if !token.is_validate() {
             *token = refresh_token(&self.config).await?;

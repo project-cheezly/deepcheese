@@ -125,6 +125,7 @@ impl KISOverseas {
             result.concat(data);
         }
 
+        result.truncate(start_date);
         Ok(result)
     }
 
