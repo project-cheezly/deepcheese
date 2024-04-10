@@ -53,14 +53,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let current_time = chrono::offset::Utc::now();
 
         if DomesticMarket::is_open(current_time) || OverseasMarket::is_open(current_time) {
-            let _ = update_current_stock_price(&pool, &kis).await;
+            let res = update_current_stock_price(&pool, &kis).await;
+            dbg!(&res);
         }
 
         if DomesticMarket::is_open(current_time) {
             let _ = update_currency_value(&pool, &kis).await;
         }
 
-        let _ = update_category_history(&pool).await;
+        let res = update_category_history(&pool).await;
+        dbg!(&res);
 
         sleep(std::time::Duration::from_secs(60)).await;
     }

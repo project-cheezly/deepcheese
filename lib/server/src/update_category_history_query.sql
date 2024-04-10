@@ -68,7 +68,7 @@ CurrentCategoryBankValue AS (
 I AS (
     INSERT INTO realtime_category_history (tr_timestamp, category_id, value)
     SELECT
-        NOW(),
+        CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Seoul',
         COALESCE(CurrentCategoryValue.category_id, CurrentCategoryBankValue.category_id) AS category_id,
         COALESCE(CurrentCategoryValue.value, 0) + COALESCE(CurrentCategoryBankValue.value, 0) AS value
     FROM
@@ -78,7 +78,7 @@ I AS (
 )
 INSERT INTO category_history (tr_date, category_id, value)
 SELECT
-    $1 AS tr_date,
+    CURRENT_DATE,
     COALESCE(CurrentCategoryValue.category_id, CurrentCategoryBankValue.category_id) AS category_id,
     COALESCE(CurrentCategoryValue.value, 0) + COALESCE(CurrentCategoryBankValue.value, 0) AS value
 FROM

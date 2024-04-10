@@ -59,6 +59,8 @@ pub async fn update_current_stock_price(pool: &PgPool, kis: &KIS)
         .map(|x| x.unwrap())
         .collect::<Vec<_>>();
 
+    dbg!(&asset_values);
+
     let mut builder = QueryBuilder::new(UPDATE_PRICE_QUERY);
 
     builder.push_values(asset_values, |mut b, record| {
@@ -81,7 +83,7 @@ async fn get_current_price(asset: Asset, kis: &KIS) -> Option<AssetValue> {
 }
 
 async fn get_current_domestic_price(asset: Asset, kis: &KIS) -> Option<AssetValue> {
-    if DomesticMarket::is_open(chrono::offset::Utc::now()) {
+    if !DomesticMarket::is_open(chrono::offset::Utc::now()) {
         return None;
     }
 
@@ -97,7 +99,7 @@ async fn get_current_domestic_price(asset: Asset, kis: &KIS) -> Option<AssetValu
 }
 
 async fn get_current_overseas_price(asset: Asset, kis: &KIS) -> Option<AssetValue> {
-    if OverseasMarket::is_open(chrono::offset::Utc::now()) {
+    if !OverseasMarket::is_open(chrono::offset::Utc::now()) {
         return None;
     }
 
