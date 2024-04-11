@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <SupportedOSPlatformVersion>10.0.22621.0</SupportedOSPlatformVersion>
+    <EncforceCodeEnforceCodeStyleInBuild>True</EncforceCodeEnforceCodeStyleInBuild>
+    <UseWindowsForms>True</UseWindowsForms>
+    <Platforms>x86</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Protobuf Include="../Proto/CheeseAPI.proto" GrpcServices="Server" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="GIEXPERTCONTROLLib">
+      <HintPath>Include\GIEXPERTCONTROLLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
