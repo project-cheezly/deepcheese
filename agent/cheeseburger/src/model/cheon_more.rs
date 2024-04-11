@@ -1,7 +1,3 @@
-pub mod cheese_api {
-    tonic::include_proto!("cheese_api");
-}
-
 use std::fmt::Display;
 use chrono::{Datelike, Local, NaiveTime};
 use log::{error, info, warn};

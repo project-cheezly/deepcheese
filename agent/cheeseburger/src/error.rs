@@ -3,6 +3,8 @@ use std::fmt::{Debug, Formatter, Display};
 pub enum CheeseburgerError {
     ConfigLoadError,
     ConnectionError(String),
+    InvalidQueryCodeError(String),
+    StreamError
 }
 
 impl Display for CheeseburgerError {
@@ -11,6 +13,9 @@ impl Display for CheeseburgerError {
             CheeseburgerError::ConfigLoadError => write!(f, "Failed to load config"),
             CheeseburgerError::ConnectionError(s)
                 => write!(f, "Failed to connect to server: {}", s),
+            CheeseburgerError::InvalidQueryCodeError(s)
+                => write!(f, "Invalid query code: {}", s),
+            CheeseburgerError::StreamError => write!(f, "Stream error"),
         }
     }
 }
@@ -21,6 +26,9 @@ impl Debug for CheeseburgerError {
             CheeseburgerError::ConfigLoadError => write!(f, "Failed to load config"),
             CheeseburgerError::ConnectionError(s)
                 => write!(f, "Failed to connect to server: {}", s),
+            CheeseburgerError::InvalidQueryCodeError(s)
+                => write!(f, "Invalid query code: {}", s),
+            CheeseburgerError::StreamError => write!(f, "Stream error"),
         }
     }
 }
