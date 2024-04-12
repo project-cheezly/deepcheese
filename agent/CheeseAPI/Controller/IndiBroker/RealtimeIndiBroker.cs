@@ -1,5 +1,5 @@
 ﻿
-using AxGIEXPERTCONTROLLib;
+using AxshinhanINDI64Lib;
 using Grpc.Core;
 using System.DirectoryServices.ActiveDirectory;
 
@@ -20,13 +20,13 @@ namespace CheeseAPI.Controller.IndiBroker
         {
             ctx.Post(_ =>
             {
-                control = new AxGiExpertControl();
+                control = new AxshinhanINDI64();
                 control.CreateControl();
-                control.ReceiveRTData += new _DGiExpertControlEvents_ReceiveRTDataEventHandler(ReceiveRTData);
+                control.ReceiveRTData += new _DshinhanINDI64Events_ReceiveRTDataEventHandler(ReceiveRTData);
             }, null);
         }
 
-        public void ReceiveRTData(object sender, _DGiExpertControlEvents_ReceiveRTDataEvent e)
+        public void ReceiveRTData(object sender, _DshinhanINDI64Events_ReceiveRTDataEvent e)
         {
             var queryCode = (string?)control?.GetQueryName();
             var stockCode = (string?)control?.GetSingleData(1);

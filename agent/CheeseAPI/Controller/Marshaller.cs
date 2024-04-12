@@ -1,26 +1,26 @@
-﻿using AxGIEXPERTCONTROLLib;
+﻿using AxshinhanINDI64Lib;
 
 namespace CheeseAPI.Controller
 {
     public static class Marshaller
     {
         
-        private static int GetIntFromControl(short idx, AxGiExpertControl control)
+        private static int GetIntFromControl(short idx, AxshinhanINDI64 control)
         {
             return int.Parse(control.GetSingleData(idx).ToString() ?? "");
         }
 
-        private static int GetDoubleFromControl(short idx, AxGiExpertControl control)
+        private static int GetDoubleFromControl(short idx, AxshinhanINDI64 control)
         {
             return int.Parse(control.GetSingleData(idx).ToString()?.Replace(".", string.Empty) ?? "");
         }
 
-        private static string GetStringFromControl(short idx, AxGiExpertControl control)
+        private static string GetStringFromControl(short idx, AxshinhanINDI64 control)
         {
             return control.GetSingleData(idx).ToString() ?? "";
         }
 
-        public static AccountListResponse LookupAccountList(AxGiExpertControl control, short nRowSize)
+        public static AccountListResponse LookupAccountList(AxshinhanINDI64 control, short nRowSize)
         {
             var data = new AccountListResponse();
             for (short i = 0; i < nRowSize; i++)
@@ -28,7 +28,7 @@ namespace CheeseAPI.Controller
             return data;
         }
 
-        public static FutureLimitOrderBookResponse LookupFutureLimitOrderBook(AxGiExpertControl control)
+        public static FutureLimitOrderBookResponse LookupFutureLimitOrderBook(AxshinhanINDI64 control)
         {
             var data = new FutureLimitOrderBookResponse()
             {
@@ -66,7 +66,7 @@ namespace CheeseAPI.Controller
             return data;
         }
 
-        public static FutureCurrentPriceResponse LookupFutureCurrentPrice(AxGiExpertControl control)
+        public static FutureCurrentPriceResponse LookupFutureCurrentPrice(AxshinhanINDI64 control)
         {
             return new FutureCurrentPriceResponse {
                 Code = GetStringFromControl(1, control),
@@ -79,7 +79,7 @@ namespace CheeseAPI.Controller
             };
         }
 
-        public static FutureOptionDepositResponse LookupFutureOptionDeposit(AxGiExpertControl control)
+        public static FutureOptionDepositResponse LookupFutureOptionDeposit(AxshinhanINDI64 control)
         {
             return new FutureOptionDepositResponse
             {
@@ -89,7 +89,7 @@ namespace CheeseAPI.Controller
             };
         }
 
-        public static TransferDepositResponse TransferDeposit(AxGiExpertControl control)
+        public static TransferDepositResponse TransferDeposit(AxshinhanINDI64 control)
         {
             return new TransferDepositResponse
             {
@@ -102,7 +102,7 @@ namespace CheeseAPI.Controller
             };
         }
 
-        public static AccountDepositInfoResponse LookupAccountDepositInfo(AxGiExpertControl control)
+        public static AccountDepositInfoResponse LookupAccountDepositInfo(AxshinhanINDI64 control)
         {
             return new AccountDepositInfoResponse
             {

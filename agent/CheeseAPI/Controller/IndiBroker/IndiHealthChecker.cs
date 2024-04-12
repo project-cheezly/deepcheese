@@ -16,7 +16,7 @@
         {
             ctx.Send(_ =>
             {
-                control = new AxGIEXPERTCONTROLLib.AxGiExpertControl();
+                control = new AxshinhanINDI64Lib.AxshinhanINDI64();
                 control.CreateControl();
             }, null);
         }

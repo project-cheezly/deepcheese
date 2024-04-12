@@ -1,4 +1,4 @@
-﻿using AxGIEXPERTCONTROLLib;
+﻿using AxshinhanINDI64Lib;
 using Google.Protobuf;
 
 namespace CheeseAPI.Controller.IndiBroker
@@ -15,9 +15,9 @@ namespace CheeseAPI.Controller.IndiBroker
         {
             ctx.Post(_ =>
             {
-                control = new AxGiExpertControl();
+                control = new AxshinhanINDI64();
                 control.CreateControl();
-                control.ReceiveData += new _DGiExpertControlEvents_ReceiveDataEventHandler(ReceiveData);
+                control.ReceiveData += new _DshinhanINDI64Events_ReceiveDataEventHandler(ReceiveData);
             }, null);
         }
 
@@ -53,7 +53,7 @@ namespace CheeseAPI.Controller.IndiBroker
             return await tcs.Task;
         }
 
-        public void ReceiveData(object sender, _DGiExpertControlEvents_ReceiveDataEvent e)
+        public void ReceiveData(object sender, _DshinhanINDI64Events_ReceiveDataEvent e)
         {
             var queryCode = (string?)control?.GetQueryName();
             var nRowSize = control?.GetMultiRowCount();

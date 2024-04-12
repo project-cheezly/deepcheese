@@ -3,9 +3,5 @@
   <PropertyGroup>
     <ActiveDebugProfile>https</ActiveDebugProfile>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Update="Include\AxGIEXPERTCONTROLLib.cs">
-      <SubType>Component</SubType>
-    </Compile>
-  </ItemGroup>
+  <ItemGroup />
 </Project>

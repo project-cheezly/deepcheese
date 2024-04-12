@@ -17,7 +17,7 @@ namespace CheeseAPI.Controller
 
             Thread thread = new(_ =>
             {
-                var control = new AxGIEXPERTCONTROLLib.AxGiExpertControl();
+                var control = new AxshinhanINDI64Lib.AxshinhanINDI64();
                 control.CreateControl();
 
                 ctx = new WindowsFormsSynchronizationContext();

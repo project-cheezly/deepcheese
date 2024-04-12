@@ -1,4 +1,4 @@
-﻿using AxGIEXPERTCONTROLLib;
+﻿using AxshinhanINDI64Lib;
 using Google.Protobuf;
 using System.Collections.Concurrent;
 
@@ -9,7 +9,7 @@ namespace CheeseAPI.Controller.IndiBroker
         protected readonly ILogger<ControllerFactory> logger = _logger;
         protected readonly SynchronizationContext ctx = _ctx;
 
-        protected AxGiExpertControl? control;
+        protected AxshinhanINDI64? control;
         protected readonly ConcurrentDictionary<short, TaskCompletionSource<IMessage>> taskCheck = new();
     }
 }
