@@ -22,9 +22,6 @@
     <Reference Include="AxshinhanINDI64Lib">
       <HintPath>Include\AxshinhanINDI64Lib.dll</HintPath>
     </Reference>
-    <Reference Include="GIEXPERTCONTROLLib">
-      <HintPath>Include\GIEXPERTCONTROLLib.dll</HintPath>
-    </Reference>
     <Reference Include="shinhanINDI64Lib">
       <HintPath>Include\shinhanINDI64Lib.dll</HintPath>
     </Reference>

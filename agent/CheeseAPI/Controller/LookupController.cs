@@ -17,6 +17,40 @@ namespace CheeseAPI.Controller
             indiBroker = new(logger, _ctx);
         }
 
+/*
+ *  1. 시세 TR 리스트
+ */
+
+/*
+ *  1.2 선물 시세 TR 리스트
+ */
+
+        async public Task<ContinuousFutureCandleResponse>LookupContinuousFutureCandle(ContinuousFutureCandleRequest grpcRequest)
+        {
+            var graphType = grpcRequest.GraphType switch
+            {
+                GraphType.Day => "D",
+                GraphType.Minute => "M",
+                _ => throw new Exception("Invalid GraphType")
+            };
+
+            var startDate = string.Format("{0:yyyyMMdd}", grpcRequest.StartDate);
+            var endDate = string.Format("{0:yyyyMMdd}", grpcRequest.EndDate);
+
+            var request = new RequestData("TR_FNCHART", new List<string>
+            {
+                grpcRequest.Code,
+                graphType,
+                grpcRequest.Interval.ToString(),
+                startDate,
+                endDate,
+                grpcRequest.Count.ToString(),
+            });
+
+            var requestResult = await indiBroker.SendRequest(request);
+            return await indiBroker.ReceiveResponse<ContinuousFutureCandleResponse>(requestResult);
+        }
+
         async public Task<AccountListResponse> LookupAccountList()
         {
             var request = new RequestData("AccountList", new List<string>());

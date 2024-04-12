@@ -10,14 +10,29 @@ namespace CheeseAPI.Controller
             return int.Parse(control.GetSingleData(idx).ToString() ?? "");
         }
 
+        private static int GetIntFromMultiControl(short row, short idx, AxshinhanINDI64 control)
+        {
+            return int.Parse(control.GetMultiData(row, idx).ToString() ?? "");
+        }
+
         private static int GetDoubleFromControl(short idx, AxshinhanINDI64 control)
         {
             return int.Parse(control.GetSingleData(idx).ToString()?.Replace(".", string.Empty) ?? "");
         }
 
+        private static int GetDoubleFromMultiControl(short row, short idx, AxshinhanINDI64 control)
+        {
+            return int.Parse(control.GetMultiData(row, idx).ToString()?.Replace(".", string.Empty) ?? "");
+        }
+        
         private static string GetStringFromControl(short idx, AxshinhanINDI64 control)
         {
             return control.GetSingleData(idx).ToString() ?? "";
+        }
+
+        private static string GetStringFromMultiControl(short row, short idx, AxshinhanINDI64 control)
+        {
+            return control.GetMultiData(row, idx).ToString() ?? "";
         }
 
         public static AccountListResponse LookupAccountList(AxshinhanINDI64 control, short nRowSize)
@@ -110,6 +125,44 @@ namespace CheeseAPI.Controller
                 TradableDeposit = GetIntFromControl(19, control),
                 WithdrawalAmount = GetIntFromControl(27, control),
             };
+        }
+
+        internal static ContinuousFutureCandleResponse LookupContinuousFutureCandle(AxshinhanINDI64 control, short v)
+        {
+            var response = new ContinuousFutureCandleResponse();
+
+            for (short row = 0; row < v; row++)
+            {
+                var rawDate = GetIntFromMultiControl(row, 0, control);
+                var rawTime = GetIntFromMultiControl(row, 1, control);
+
+                var date = new Date
+                {
+                    Year = rawDate / 10000,
+                    Month = (rawDate % 10000) / 100,
+                    Day = rawDate % 100,
+                };
+
+                var time = new Time
+                {
+                    Minute = rawTime / 10000,
+                    Second = (rawTime % 10000) / 100,
+                    Millisecond = rawTime % 100,
+                };
+
+                var candle = new Candle
+                {
+                    Date = date,
+                    Time = time,
+                    Open = GetDoubleFromMultiControl(row, 2, control),
+                    High = GetDoubleFromMultiControl(row, 3, control),
+                    Low = GetDoubleFromMultiControl(row, 4, control),
+                    Close = GetDoubleFromMultiControl(row, 5, control),
+                    Volume = GetIntFromMultiControl(row, 9, control),
+                };
+            }
+
+            return response;
         }
     }
 }

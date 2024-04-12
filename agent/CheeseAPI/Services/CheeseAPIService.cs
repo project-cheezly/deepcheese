@@ -2,6 +2,7 @@ using CheeseAPI;
 using CheeseAPI.Controller;
 using CheeseAPI.Controller.IndiBroker;
 using Grpc.Core;
+using System.Configuration;
 
 namespace CheeseAPI.Services
 {
@@ -20,6 +21,22 @@ namespace CheeseAPI.Services
             indiHealthChecker = factory.CreateIndiHealthChecker();
 
             indiHealthChecker.StartIndi();
+        }
+
+/*
+ *  1. 시세 TR 리스트
+ */
+
+/*
+ *  1.2 선물 시세 TR 리스트
+ */
+
+        async public override Task<ContinuousFutureCandleResponse> LookupContinuousFutureCandle(
+            ContinuousFutureCandleRequest request,
+            ServerCallContext context
+        ) {
+            logger.LogInformation("REQ: LookupContinuousFutureCandle");
+            return await lookupController.LookupContinuousFutureCandle(request);
         }
 
         async public override Task<AccountListResponse> LookupAccountList(Empty request, ServerCallContext context)
