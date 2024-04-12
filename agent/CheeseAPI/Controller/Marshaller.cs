@@ -164,5 +164,38 @@ namespace CheeseAPI.Controller
 
             return response;
         }
+
+        public static TradeFutureOptionResponse TradeFutureOption(AxshinhanINDI64 control)
+        {
+            return new TradeFutureOptionResponse
+            {
+                OrderNumber = GetStringFromControl(0, control),
+                OrcOrderNumber = GetStringFromControl(1, control),
+            };
+        }
+
+        public static FutureOptionContractResponse LookupFutureOptionContract(AxshinhanINDI64 control, short v)
+        {
+            var result = new FutureOptionContractResponse();
+
+            for (short row = 0; row < v; row++)
+            {
+                result.List.Add(new FutureOptionContract
+                {
+                    Code = GetStringFromMultiControl(row, 0, control),
+                    TradeSep = GetStringFromMultiControl(row, 2, control) switch
+                    {
+                        "01" => TradeSep.Ask,
+                        "02" => TradeSep.Bid,
+                        "03" => TradeSep.Modify,
+                        _ => TradeSep.Cancel,
+                    },
+                    Amount = GetIntFromMultiControl(row, 3, control),
+                    ClosableAmount = GetIntFromMultiControl(row, 4, control),
+                });
+            }
+
+            return result;
+        }
     }
 }

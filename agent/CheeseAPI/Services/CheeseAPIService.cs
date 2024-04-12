@@ -98,5 +98,21 @@ namespace CheeseAPI.Services
             realtimeController.RemoveService("FC", request.Code, responseStream);
             logger.LogInformation("RELEASE: LookupFutureCurrentPriceRealtime");
         }
+
+        async public override Task<TradeFutureOptionResponse> TradeFutureOption(
+            TradeFutureOptionRequest request,
+            ServerCallContext context
+        ) {
+            logger.LogInformation("REQ: TradeFutureOption");
+            return await lookupController.TradeFutureOption(request);
+        }
+
+        async public override Task<FutureOptionContractResponse> LookupFutureOptionContract(
+            FutureOptionContractRequest request,
+            ServerCallContext context
+        ) {
+            logger.LogInformation("REQ: LookupFutureOptionContract");
+            return await lookupController.LookupFutureOptionContract(request);
+        }
     }
 }

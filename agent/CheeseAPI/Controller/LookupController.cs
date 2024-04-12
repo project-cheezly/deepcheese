@@ -90,7 +90,7 @@ namespace CheeseAPI.Controller
         {
             var request = new RequestData("SABA602Q1", new List<string>
             {
-                "27031555538",
+                grpcRequest.AccountNumber,
                 "01",
                 grpcRequest.Password,
                 "1"
@@ -98,6 +98,67 @@ namespace CheeseAPI.Controller
 
             var requestResult = await indiBroker.SendRequest(request);
             return await indiBroker.ReceiveResponse<AccountDepositInfoResponse>(requestResult);
+        }
+
+        async public Task<TradeFutureOptionResponse> TradeFutureOption(TradeFutureOptionRequest grpcRequest)
+        {
+            var request = new RequestData("SABC100U1", new List<string>
+            {
+                grpcRequest.AccountNumber,
+                grpcRequest.Password,
+                grpcRequest.StockCode,
+                grpcRequest.TransactionAmount.ToString(),
+                grpcRequest.Price.ToString().Insert(-2, "."), // 1000 -> 10.00
+                grpcRequest.TradeCondition switch
+                {
+                    TradeCondition.Normal => "0",
+                    TradeCondition.Ioc => "3",
+                    TradeCondition.Fok => "4", 
+                    _ => throw new NotImplementedException() 
+                },
+                grpcRequest.TradeClassification switch
+                {
+                    TradeSep.Ask | TradeSep.Cancel | TradeSep.Modify => "1",
+                    TradeSep.Bid => "2",
+                    _ => throw new NotImplementedException()
+                },
+                grpcRequest.OrderClassification switch
+                {
+                    OrderClassification.Limit => "L",
+                    OrderClassification.Market => "M",
+                    OrderClassification.Conditional => "C",
+                    OrderClassification.Best => "B",
+                    _ => throw new NotImplementedException()
+                },
+                grpcRequest.Arbitrage.ToString(),
+                grpcRequest.TradeClassification switch
+                {
+                    TradeSep.Ask | TradeSep.Bid => "1",
+                    TradeSep.Modify => "2",
+                    TradeSep.Cancel => "3",
+                    _ => throw new NotImplementedException()
+                },
+                grpcRequest.ModifyAmount.ToString(),
+                grpcRequest.OriginalOrderNumber,
+                grpcRequest.ReservationOrder
+            });
+
+            var requestResult = await indiBroker.SendRequest(request);
+            return await indiBroker.ReceiveResponse<TradeFutureOptionResponse>(requestResult);
+        }
+
+        async public Task<FutureOptionContractResponse> LookupFutureOptionContract(FutureOptionContractRequest grpcRequest)
+        {
+            var request = new RequestData("SABC952Q1", new List<String>
+            {
+                grpcRequest.AccountNumber,
+                grpcRequest.Password,
+            });
+
+            var requestResult = await indiBroker.SendRequest(request);
+            return await indiBroker.ReceiveResponse<FutureOptionContractResponse>(requestResult);
+
+            throw new NotImplementedException();
         }
     }
 }

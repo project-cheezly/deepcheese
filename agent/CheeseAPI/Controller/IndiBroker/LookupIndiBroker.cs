@@ -66,6 +66,8 @@ namespace CheeseAPI.Controller.IndiBroker
                 "SACA108U1" => Marshaller.TransferDeposit(control!),
                 "SABA602Q1" => Marshaller.LookupAccountDepositInfo(control!),
                 "TR_FNCHART" => Marshaller.LookupContinuousFutureCandle(control!, nRowSize ?? 0),
+                "SABC100U1" => Marshaller.TradeFutureOption(control!),
+                "SABC967Q1" => Marshaller.LookupFutureOptionContract(control!, nRowSize ?? 0),
                 _ => throw new NotImplementedException(),
             };
 
