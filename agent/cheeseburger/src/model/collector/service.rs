@@ -58,7 +58,7 @@ pub async fn start_collector_service(targets: Vec<TargetData>)
 fn end_up_service(task_handles: Vec<JoinHandle<()>>) {
     tokio::spawn(async move {
         let now = Local::now();
-        let duration = (now - now.with_time(END_UP_TIME.unwrap()).unwrap())
+        let duration = (now.with_time(END_UP_TIME.unwrap()).unwrap() - now)
             .to_std()
             .unwrap_or_default();
 

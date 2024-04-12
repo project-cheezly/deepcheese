@@ -22,6 +22,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let target = vec![TargetData {
         query_code: model::QueryCode::FutureOptionCurrentPrice,
         stock_code: "106V6".to_string()
+    }, TargetData {
+        query_code: model::QueryCode::FutureOptionLimitOrderBook,
+        stock_code: "106V6".to_string()
     }];
 
     if let Err(e) = start_collector_service(target).await {
