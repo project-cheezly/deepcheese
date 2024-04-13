@@ -23,14 +23,6 @@ namespace CheeseAPI.Services
             indiHealthChecker.StartIndi();
         }
 
-/*
- *  1. 시세 TR 리스트
- */
-
-/*
- *  1.2 선물 시세 TR 리스트
- */
-
         async public override Task<ContinuousFutureCandleResponse> LookupContinuousFutureCandle(
             ContinuousFutureCandleRequest request,
             ServerCallContext context

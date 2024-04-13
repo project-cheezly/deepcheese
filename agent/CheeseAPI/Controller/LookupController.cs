@@ -149,16 +149,17 @@ namespace CheeseAPI.Controller
 
         async public Task<FutureOptionContractResponse> LookupFutureOptionContract(FutureOptionContractRequest grpcRequest)
         {
-            var request = new RequestData("SABC952Q1", new List<String>
+            var request = new RequestData("SABC967Q1", new List<string>
             {
                 grpcRequest.AccountNumber,
                 grpcRequest.Password,
+                "0",
+                "0",
+                "1"
             });
 
             var requestResult = await indiBroker.SendRequest(request);
             return await indiBroker.ReceiveResponse<FutureOptionContractResponse>(requestResult);
-
-            throw new NotImplementedException();
         }
     }
 }
