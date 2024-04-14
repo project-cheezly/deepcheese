@@ -4,6 +4,7 @@
     import { page } from '$app/stores';
     import { onMount } from "svelte";
     import { invalidate } from "$app/navigation";
+    import CandleChart from "$lib/components/charts/line/CandleChart.svelte";
 
     onMount(() => {
         const interval = setInterval(() => {
@@ -25,7 +26,7 @@
     <Container.Content>
         <div class="main-content col-span-2 md:col-span-1">
             <h2>실시간</h2>
-            <BaseChart data={$page.data.realtimeCategoryValueHistory} />
+            <CandleChart data={$page.data.realtimeCategoryValueHistory} />
         </div>
         <div class="main-content col-span-2 md:col-span-1">
             <h2>일간</h2>
