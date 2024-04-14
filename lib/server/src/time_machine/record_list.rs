@@ -31,10 +31,12 @@ impl<T> RecordList<T> {
         Self { data: map }
     }
 
+    #[allow(dead_code)]
     pub fn get(&self, date: NaiveDate) -> Option<&Vec<T>> {
         self.data.get(&date)
     }
 
+    #[allow(dead_code)]
     pub fn get_initial_date(&self) -> Option<NaiveDate> {
         self.data.first_key_value().map(|(k, _)| *k)
     }

@@ -59,8 +59,6 @@ pub async fn update_current_stock_price(pool: &PgPool, kis: &KIS)
         .map(|x| x.unwrap())
         .collect::<Vec<_>>();
 
-    dbg!(&asset_values);
-
     let mut builder = QueryBuilder::new(UPDATE_PRICE_QUERY);
 
     builder.push_values(asset_values, |mut b, record| {

@@ -14,6 +14,7 @@ WHERE currency.code != 'KRW'
 
 #[derive(Debug)]
 struct Currency {
+    #[allow(dead_code)]
     code: String,
     id: i32,
 }

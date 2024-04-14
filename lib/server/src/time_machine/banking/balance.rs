@@ -9,12 +9,14 @@ pub struct BankBalance {
 }
 
 impl BankBalance {
+    #[allow(dead_code)]
     pub fn new() -> Self {
         BankBalance {
             data: HashMap::new()
         }
     }
 
+    #[allow(dead_code)]
     pub fn update(&mut self, tr_list: Vec<BankRecord>) {
         for tr in tr_list {
             let category_currency = self.data

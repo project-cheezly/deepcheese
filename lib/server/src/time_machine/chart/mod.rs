@@ -24,6 +24,7 @@ impl Chart {
         }
     }
 
+    #[allow(dead_code)]
     pub fn get(&self, date: NaiveDate) -> Option<&CurrencyValue> {
         self.data.get(&date)
     }
@@ -36,6 +37,7 @@ impl Chart {
         self.data.extend(other.data);
     }
 
+    #[allow(dead_code)]
     pub fn get_initial_date(&self) -> Option<NaiveDate> {
         self.data.keys().next().cloned()
     }

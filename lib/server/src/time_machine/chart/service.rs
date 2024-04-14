@@ -82,7 +82,6 @@ impl<'a> ChartService<'a> {
     ) -> Option<CurrencyValue>
     {
         if !self.query_history.is_query_needed(&asset_id, date) {
-            dbg!(&self.charts.get(&asset_id).get_nearest(date));
             return self.charts.get(&asset_id).get_nearest(date);
         }
 
@@ -94,7 +93,6 @@ impl<'a> ChartService<'a> {
             if let Some(final_date) = chart.get_final_date() {
                 self.query_history.update_query_date(&asset_id, final_date);
             }
-            dbg!(&chart);
             self.charts.insert(&asset_id, chart);
         } else {
             self.query_history

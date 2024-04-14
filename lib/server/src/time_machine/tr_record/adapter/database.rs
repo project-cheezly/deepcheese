@@ -35,6 +35,7 @@ pub struct TrRecordListDatabaseAdapter<'a> {
 }
 
 impl<'a> TrRecordListDatabaseAdapter<'a> {
+    #[allow(dead_code)]
     pub fn new(conn: &'a PgPool) -> Self {
         TrRecordListDatabaseAdapter { conn }
     }

@@ -30,6 +30,7 @@ pub struct BankRecordListDatabaseAdapter<'a> {
 }
 
 impl<'a> BankRecordListDatabaseAdapter<'a> {
+    #[allow(dead_code)]
     pub fn new(conn: &'a PgPool) -> Self {
         BankRecordListDatabaseAdapter { conn }
     }

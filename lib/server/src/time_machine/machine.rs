@@ -1,10 +1,8 @@
 use chrono::Duration;
 use kis::KIS;
 use sqlx::{PgPool, QueryBuilder};
-use crate::time_machine::asset::balance::AssetBalance;
 use crate::time_machine::banking::adapter::BankRecordListSource;
 use crate::time_machine::banking::adapter::database::BankRecordDatabaseAdapter;
-use crate::time_machine::banking::balance::BankBalance;
 use crate::time_machine::chart::adapter::kis_adapter::KISChartAdapter;
 use crate::time_machine::chart::service::ChartService;
 use crate::time_machine::currency::adapter::kis_adapter::KISCurrencyChartAdapter;
@@ -12,7 +10,6 @@ use crate::time_machine::currency::CurrencyValue;
 use crate::time_machine::currency::service::CurrencyChartService;
 use crate::time_machine::tr_record::adapter::database::TrRecordDatabaseAdapter;
 use crate::time_machine::tr_record::adapter::TrRecordListSource;
-use crate::time_machine::tr_record::TrRecord;
 
 const INSERT_CATEGORY_HISTORY_QUERY: &str = r#"
     INSERT INTO category_history (tr_date, category_id, value)
@@ -88,8 +85,6 @@ impl<'a> Machine<'a> {
 
             let asset_value = unit_asset_value.unwrap_or_default() * CurrencyValue::from(asset_amount) * &target_currency;
             let bank_value = bank_value * &target_currency;
-
-            dbg!(&crit_date, &asset_value, &bank_value);
 
             query_parameters.push((crit_date, asset_value + bank_value));
 

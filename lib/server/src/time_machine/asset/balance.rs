@@ -5,16 +5,19 @@ use crate::time_machine::tr_record::TrRecord;
 
 #[derive(Debug, Clone)]
 pub struct AssetBalance {
+    #[allow(dead_code)]
     data: HashMap<CategoryId, HashMap<AssetId, AssetAmount>>
 }
 
 impl AssetBalance {
+    #[allow(dead_code)]
     pub fn new() -> Self {
         AssetBalance {
             data: HashMap::new()
         }
     }
 
+    #[allow(dead_code)]
     pub fn update(&mut self, tr_list: Vec<TrRecord>) {
         for tr in tr_list {
             let category_asset = self.data

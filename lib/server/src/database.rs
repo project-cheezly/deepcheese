@@ -19,8 +19,6 @@ pub async fn connect_to_database() -> Result<Pool<Postgres>, Error> {
         .port(db_port)
         .database(&db_name);
 
-    dbg!(&connect_options);
-
     PgPoolOptions::new()
         .max_connections(3)
         .connect_with(connect_options).await

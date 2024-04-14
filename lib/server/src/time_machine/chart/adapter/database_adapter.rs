@@ -9,6 +9,7 @@ pub struct DatabaseChartAdapter<'a> {
 }
 
 impl<'a> DatabaseChartAdapter<'a> {
+    #[allow(dead_code)]
     pub fn new(pool: &'a PgPool) -> Self {
         DatabaseChartAdapter { pool }
     }
