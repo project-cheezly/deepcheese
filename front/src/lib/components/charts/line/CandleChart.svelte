@@ -33,7 +33,7 @@
     let xRange, yRange;
     $: {
         xRange = d3.extent(data, (d) => d.timestamp);
-        yRange = d3.extent(data, (d) => d.value);
+        yRange = d3.extent(data, (d) => parseFloat(d.value));
 
         const yRangeDiff = yRange[1] - yRange[0];
         yRange[0] = Math.max((yRange[0] - yRangeDiff * 0.1), 0);
@@ -73,11 +73,6 @@
     $: xTicks = x.ticks(timeScale === 'time' ? 4 : d3.utcMonth);
     $: yTicks = y.ticks(4);
 
-    // 꺾은선 생성
-    $: line = d3.line()
-        .x((d) => x(d.timestamp))
-        .y((d) => y(d.value));
-
 </script>
 
 <svg viewBox="0 0 {width} {height}">
@@ -116,7 +111,7 @@
     >
         {#each buckets as [[maxVal, minVal], timestamp]}
             <rect
-                x={x(timestamp) - 9}
+                x={x(timestamp.setMinutes(0)) - 9}
                 y={maxVal === minVal ? y(minVal) - 9 : y(minVal)}
                 width="18"
                 height="{Math.max(y(maxVal) - y(minVal), 18)}"
@@ -130,6 +125,5 @@
             r="6"
             fill="currentColor"
         />
-
     </g>
 </svg>
