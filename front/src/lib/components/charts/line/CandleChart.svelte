@@ -26,7 +26,8 @@
         const bin = d3.bin().value(d => d.timestamp).thresholds((data, min, max) => d3.scaleUtc().domain([min, max]).ticks(d3.utcHour.every(1)));
 
         buckets = bin(data)
-            .map((d) => [d3.extent(d, (d) => d.value), d3.min(d, (d) => d.timestamp)]);
+            .map((d) => [d3.extent(d, (d) => d.value), d3.min(d, (d) => d.timestamp)])
+            .filter((d) => d[0][0] !== undefined);
     }
 
     // x, y 차트 범위 설정
