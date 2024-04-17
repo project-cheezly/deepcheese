@@ -26,11 +26,18 @@ impl<T> CsvCollector<T>
 where
     T: StreamSerializer
 {
-    pub fn new(query_code: &str, stock_code: &str) -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn new(query_code: &str, stock_code: &str)
+        -> Result<Self, Box<dyn std::error::Error + Sync + Send>>
+    {
         let file_name = Self::get_file_name(query_code, stock_code);
         let mut writer = WriterBuilder::new()
             .has_headers(false)
-            .from_path(file_name)?;
+            .from_path(file_name)
+            .or_else(|e| {
+                log::error!("Failed to create csv file: {}", e);
+                Err(e)
+            })?;
+
         writer.write_record(&T::get_headers())?;
         Ok(Self {
             writer,

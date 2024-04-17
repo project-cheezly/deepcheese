@@ -1,19 +1,15 @@
-use config::Config;
 use serde::Deserialize;
 
-use crate::error::CheeseburgerError;
+use crate::core::base_config;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct ClientConfig {
     pub host: String,
 }
 
-pub fn load() -> Result<ClientConfig, Box<dyn std::error::Error>> {
-    Config::builder()
-        .add_source(config::Environment::with_prefix("CHEESEBURGER"))
-        .build()
-        .and_then(|conf| conf.try_deserialize::<ClientConfig>())
-        .or(Err(CheeseburgerError::ConfigLoadError.into()))
+pub fn load() -> Result<ClientConfig, Box<dyn std::error::Error + Sync + Send>> {
+    base_config::declare_config!("client", ClientConfig);
+    base_config::load_mac!()
 }
 
 #[cfg(test)]
@@ -23,9 +19,8 @@ mod tests {
 
     #[test]
     fn test_load() {
-        env::set_var("CHEESEBURGER_HOST", "http://localhost:8080");
         let config = load().unwrap();
 
-        assert_eq!(config.host, "http://localhost:8080");
+        assert_eq!(config.host, "localhost:5000");
     }
 }

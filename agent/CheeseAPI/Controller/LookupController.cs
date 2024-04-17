@@ -102,13 +102,29 @@ namespace CheeseAPI.Controller
 
         async public Task<TradeFutureOptionResponse> TradeFutureOption(TradeFutureOptionRequest grpcRequest)
         {
+            var rawPrice = grpcRequest.Price.ToString();
+
+            var orderClassification = grpcRequest.OrderClassification switch
+            {
+                OrderClassification.Limit => "L",
+                OrderClassification.Market => "M",
+                OrderClassification.Conditional => "C",
+                OrderClassification.Best => "B",
+                _ => throw new NotImplementedException()
+            };
+
+            if (orderClassification != "M")
+            {
+                rawPrice = rawPrice.Insert(rawPrice.Length - 2, ".");
+            } else { rawPrice = ""; }
+
             var request = new RequestData("SABC100U1", new List<string>
             {
                 grpcRequest.AccountNumber,
                 grpcRequest.Password,
                 grpcRequest.StockCode,
                 grpcRequest.TransactionAmount.ToString(),
-                grpcRequest.Price.ToString().Insert(-2, "."), // 1000 -> 10.00
+                rawPrice,
                 grpcRequest.TradeCondition switch
                 {
                     TradeCondition.Normal => "0",
@@ -118,8 +134,10 @@ namespace CheeseAPI.Controller
                 },
                 grpcRequest.TradeClassification switch
                 {
-                    TradeSep.Ask | TradeSep.Cancel | TradeSep.Modify => "1",
-                    TradeSep.Bid => "2",
+                    TradeSep.Ask => "01",
+                    TradeSep.Cancel => "01",
+                    TradeSep.Modify => "01",
+                    TradeSep.Bid => "02",
                     _ => throw new NotImplementedException()
                 },
                 grpcRequest.OrderClassification switch
@@ -130,10 +148,17 @@ namespace CheeseAPI.Controller
                     OrderClassification.Best => "B",
                     _ => throw new NotImplementedException()
                 },
-                grpcRequest.Arbitrage.ToString(),
+                grpcRequest.Arbitrage switch
+                {
+                    0 => "3",
+                    1 => "1",
+                    2 => "2",
+                    _ => throw new NotImplementedException()
+                },
                 grpcRequest.TradeClassification switch
                 {
-                    TradeSep.Ask | TradeSep.Bid => "1",
+                    TradeSep.Ask => "1",
+                    TradeSep.Bid => "1",
                     TradeSep.Modify => "2",
                     TradeSep.Cancel => "3",
                     _ => throw new NotImplementedException()
@@ -160,6 +185,25 @@ namespace CheeseAPI.Controller
 
             var requestResult = await indiBroker.SendRequest(request);
             return await indiBroker.ReceiveResponse<FutureOptionContractResponse>(requestResult);
+        }
+
+        async public Task<FuturePreviousCandleResponse> LookupFuturePreviousCandle(FuturePreviousCandleRequest grpcRequest)
+        {
+            var request = new RequestData("TR_9053", new List<string>
+            {
+                grpcRequest.Code,
+                grpcRequest.Class
+            });
+
+            var requestResult = await indiBroker.SendRequest(request);
+            return await indiBroker.ReceiveResponse<FuturePreviousCandleResponse>(requestResult);
+        }
+
+        async public Task<FuturesInfoResponse> LookupFuturesInfo()
+        {
+            var request = new RequestData("fut_mst", new List<string>());
+            var requestResult = await indiBroker.SendRequest(request);
+            return await indiBroker.ReceiveResponse<FuturesInfoResponse>(requestResult);
         }
     }
 }

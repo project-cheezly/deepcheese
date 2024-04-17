@@ -64,6 +64,10 @@ service CheeseAPI {
     /* 선물옵션 매매내역 조회 (SABC203Q2) */
     rpc LookupFutureOptionTradingHistory (FutureOptionTradingHistoryRequest) returns (FutureOptionTradingHistoryResponse);
 
+    /* 선물전일시고저종조회 (TR_9053) */
+    rpc LookupFuturePreviousCandle (FuturePreviousCandleRequest) returns 
+    (FuturePreviousCandleResponse);
+
 /*
         2.3 업무 기타 TR
 */
@@ -190,6 +194,7 @@ message FutureCurrentPriceResponse {
     int32 bid_price = 5; // 매수호가
     int32 ask_price = 6; // 매도호가
     optional int32 open_interest = 7; // 미결제약정수량
+    Candle candle = 8; // 캔들
 }
 
 /* 선물 호가 (FH) */
@@ -240,7 +245,7 @@ message FuturesInfo {
     optional string spread_back_month_standard_code = 6; // 스프레드근월물표준코드
     optional string spread_lead_month_standard_code = 7; // 스프레드원월물표준코드
     Date final_trade_date = 8; // 최종거래일
-    Date base_asset_code = 9; // 기초자산코드
+    string base_asset_code = 9; // 기초자산코드
     int32 multiplier = 10; // 거래승수
 }
 
@@ -306,6 +311,9 @@ message FutureOptionDepositResponse {
     int32 total_deposit = 1; // 총예수금
     int32 tradable_deposit = 2; // 거래가능금액
     int32 withdrawal_amount = 3; // 출금가능금액
+    int32 liquidated_total_value = 4; // 청산기준총액
+    // 청산가능금액
+    // 청산가능수량
 }
 
 /* 선물/옵션, 주식선물, 상품선물 잔고 조회 (SABC967Q1) */
@@ -352,6 +360,19 @@ message FutureOptionTradingHistoryResponse {
     repeated FutureOptionTradingHistory list = 1;
 }
 
+/* 선물전일시고저종조회 (TR_9053) */
+
+message FuturePreviousCandleRequest {
+    string code = 1; // 단축코드
+    string class = 2; // 구분 (FU: 선물, OP: 옵션, CF: 상품선물)
+}
+
+message FuturePreviousCandleResponse {
+    int32 open = 1; // 시가
+    int32 high = 2; // 고가
+    int32 low = 3; // 저가
+    int32 close = 4; // 종가
+}
 
 /*
         2.3 업무 기타 TR

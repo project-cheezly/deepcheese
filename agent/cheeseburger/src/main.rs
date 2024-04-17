@@ -1,34 +1,38 @@
+use std::sync::Arc;
 use chrono::Duration;
-use crate::core::Account;
+use sqlx::Postgres;
+use tokio::sync::Mutex;
+use crate::core::database::get_pool;
+use crate::core::future::stream::StreamManager;
 use crate::model::cheon_more::start_cheon_more_service;
-use crate::model::collector::service::TargetData;
-use crate::model::start_collector_service;
+use crate::model::{start_cheeseburger_service, start_collector_service, start_recorder_service};
 
 mod error;
-mod client;
 mod core;
 mod model;
+pub mod client;
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), Box<dyn std::error::Error + Sync + Send>> {
     env_logger::init();
 
-    let account = Account::load_from_env("CHEESEBURGER")?;
+    let stream_manager = Arc::new(Mutex::new(StreamManager::new()));
+    let pool = Arc::new(get_pool::<Postgres>().await?);
 
-    if let Err(e) = start_cheon_more_service(account).await {
+    if let Err(e) = start_cheon_more_service().await {
         log::error!("Error starting cheon more service: {}", e);
     };
 
-    let target = vec![TargetData {
-        query_code: model::QueryCode::FutureOptionCurrentPrice,
-        stock_code: "106V6".to_string()
-    }, TargetData {
-        query_code: model::QueryCode::FutureOptionLimitOrderBook,
-        stock_code: "106V6".to_string()
-    }];
-
-    if let Err(e) = start_collector_service(target).await {
+    if let Err(e) = start_collector_service(stream_manager.clone()).await {
         log::error!("Error starting collector service: {}", e);
+    };
+
+    if let Err(e) = start_cheeseburger_service(stream_manager.clone()).await {
+        log::error!("Error starting cheeseburger service: {}", e);
+    };
+
+    if let Err(e) = start_recorder_service(pool).await {
+        log::error!("Error starting recorder service: {}", e);
     };
 
     tokio::select! {

@@ -1,0 +1,49 @@
+[client]
+host = "localhost:5000"
+
+[database]
+host = "localhost"
+user = "postgres"
+password = ""
+port = 5432
+name = ""
+
+[cheeseburger]
+
+[cheeseburger.account]
+number = "12345678901"
+password = "1234"
+
+[[cheeseburger.strategy]]
+strategy_type = "LONG"
+bet = 2.5
+ratio = 0.5
+target_code = "KOSDAQ"
+
+[cheon_more]
+close_time = 16:00:00
+
+[cheon_more.account]
+number = "12345678901"
+password = "1234"
+
+[collector]
+end_time = 15:50:00
+
+[[collector.target]]
+query_code = "FH"
+stock_code = "106V6"
+
+[[collector.target]]
+query_code = "FC"
+stock_code = "106V6"
+
+[recorder]
+close_time = 15:50:00
+category_id = 9
+asset_id = 14657
+account_id = 21
+
+[recorder.account]
+number = "12345678901"
+password = "1234"

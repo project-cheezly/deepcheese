@@ -1,10 +1,20 @@
 use std::fmt::Display;
+use serde::Deserialize;
 use crate::error::CheeseburgerError;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq)]
 pub enum QueryCode {
     FutureOptionCurrentPrice,
     FutureOptionLimitOrderBook
+}
+
+impl<'de> Deserialize<'de> for QueryCode {
+    fn deserialize<D>(deserializer: D) -> Result<QueryCode, D::Error>
+        where D: serde::Deserializer<'de>
+    {
+        let s = String::deserialize(deserializer)?;
+        QueryCode::try_from(s).map_err(serde::de::Error::custom)
+    }
 }
 
 impl Display for QueryCode {

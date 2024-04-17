@@ -1,46 +1,39 @@
+use std::sync::Arc;
 use chrono::{Local, NaiveTime};
 use log::{error, info};
+use tokio::sync::broadcast::Receiver;
+use tokio::sync::Mutex;
 use tokio::task::JoinHandle;
-use tonic::Streaming;
-use tonic::transport::Channel;
-use crate::client;
-use crate::client::cheese_api::cheese_api_client::CheeseApiClient;
-use crate::error::CheeseburgerError;
-use crate::model::collector::adapter_out::{CsvCollector, DataCollector};
-use crate::model::query_code::QueryCode;
-use crate::model::collector::adapter_in::{
-    get_future_price_stream,
-    get_limit_order_book_stream
+use crate::core::{
+    future::stream::StreamManager,
+    indi::QueryCode
 };
-use crate::model::collector::response::{
-    FuturePrice,
-    LimitOrderBook,
-    StreamSerializer
+use crate::model::collector::{
+    adapter_out::{CsvCollector, DataCollector},
+    response::{FuturePrice, LimitOrderBook, StreamSerializer},
+    config
 };
 
-const END_UP_TIME: Option<NaiveTime> = NaiveTime::from_hms_opt(15, 50, 0);
-
-pub struct TargetData {
-    pub query_code: QueryCode,
-    pub stock_code: String,
-}
-
-pub async fn start_collector_service(targets: Vec<TargetData>)
-                                     -> Result<(), Box<dyn std::error::Error>>
+pub async fn start_collector_service(
+    stream_manager: Arc<Mutex<StreamManager>>
+) -> Result<(), Box<dyn std::error::Error + Sync + Send>>
 {
-    let mut client = client::new().await
-        .or_else(|e| {
-            error!("Failed to connect to Cheese API: {}", e);
-            Err(CheeseburgerError::ConnectionError(e.to_string()))
-        })?;
+    let config = config::load().await?;
 
     let mut task_handles = vec![];
-    for target in targets {
-        info!("Start collecting {} data for stock code: {}", &target.query_code, &target.stock_code);
+
+    for target in config.target {
+        info!(
+            "Start collecting {} data for stock code: {}",
+            &target.query_code,
+            &target.stock_code
+        );
 
         let handle = match target.query_code {
-            QueryCode::FutureOptionCurrentPrice => { start_future_price_collector_service(&mut client, &target.stock_code).await },
-            QueryCode::FutureOptionLimitOrderBook => { start_future_limit_order_book_collector_service(&mut client, &target.stock_code).await }
+            QueryCode::FutureOptionCurrentPrice =>
+                start_future_price_collector_service(stream_manager.clone(), &target.stock_code).await,
+            QueryCode::FutureOptionLimitOrderBook =>
+                start_future_limit_order_book_collector_service(stream_manager.clone(), &target.stock_code).await
         };
 
         if let Ok(handle) = handle {
@@ -50,15 +43,18 @@ pub async fn start_collector_service(targets: Vec<TargetData>)
         }
     }
 
-    end_up_service(task_handles);
+    end_up_service(task_handles, config.end_time);
 
     Ok(())
 }
 
-fn end_up_service(task_handles: Vec<JoinHandle<()>>) {
+fn end_up_service(
+    task_handles: Vec<JoinHandle<()>>,
+    end_up_time: NaiveTime
+) {
     tokio::spawn(async move {
         let now = Local::now();
-        let duration = (now.with_time(END_UP_TIME.unwrap()).unwrap() - now)
+        let duration = (now.with_time(end_up_time).unwrap() - now)
             .to_std()
             .unwrap_or_default();
 
@@ -70,35 +66,53 @@ fn end_up_service(task_handles: Vec<JoinHandle<()>>) {
     });
 }
 
-async fn start_future_price_collector_service(client: &mut CheeseApiClient<Channel>, stock_code: &str)
-    -> Result<JoinHandle<()>, Box<dyn std::error::Error>>
+async fn start_future_price_collector_service(
+    stream_manager: Arc<Mutex<StreamManager>>,
+    code: &str
+) -> Result<JoinHandle<()>, Box<dyn std::error::Error + Sync + Send>>
 {
-    let csv_writer = CsvCollector::<FuturePrice>::new(&QueryCode::FutureOptionCurrentPrice.to_string(), stock_code).unwrap();
+    let csv_writer =
+        CsvCollector::<FuturePrice>::new(
+            &QueryCode::FutureOptionCurrentPrice.to_string(),
+            code
+        )?;
 
-    if let Ok(stream) = get_future_price_stream(client, stock_code).await {
-        Ok(tokio::spawn(data_loop(csv_writer, stream)))
-    } else {
-        Err(Box::new(CheeseburgerError::StreamError))
-    }
+    let stream = stream_manager
+        .lock()
+        .await
+        .get_future_price_receiver(code)
+        .await;
+
+    Ok(tokio::spawn(data_loop(csv_writer, stream)))
 }
 
-async fn start_future_limit_order_book_collector_service(client: &mut CheeseApiClient<Channel>, stock_code: &str)
-    -> Result<JoinHandle<()>, Box<dyn std::error::Error>>
+async fn start_future_limit_order_book_collector_service(
+    stream_manager: Arc<Mutex<StreamManager>>,
+    code: &str
+) -> Result<JoinHandle<()>, Box<dyn std::error::Error + Sync + Send>>
 {
-    let csv_writer = CsvCollector::<LimitOrderBook>::new(&QueryCode::FutureOptionLimitOrderBook.to_string(), stock_code).unwrap();
+    let csv_writer =
+        CsvCollector::<LimitOrderBook>::new(
+            &QueryCode::FutureOptionLimitOrderBook.to_string(),
+            code
+        )?;
 
-    if let Ok(stream) = get_limit_order_book_stream(client, stock_code).await {
-        Ok(tokio::spawn(data_loop(csv_writer, stream)))
-    } else {
-        Err(Box::new(CheeseburgerError::StreamError))
-    }
+    let stream = stream_manager
+        .lock()
+        .await
+        .get_future_limit_order_book_stream(code)
+        .await;
+
+    Ok(tokio::spawn(data_loop(csv_writer, stream)))
 }
 
-async fn data_loop<T, V>(mut writer: V, mut stream: Streaming<T::Input>)
-    where T: StreamSerializer,
-          V: DataCollector<T>
+async fn data_loop<T, V>(mut writer: V, mut stream: Receiver<T::Input>)
+    where
+        T: StreamSerializer,
+        T::Input: Clone,
+        V: DataCollector<T>
 {
-    while let Ok(Some(data)) = stream.message().await {
+    while let Ok(data) = stream.recv().await {
         match writer.write(data) {
             Ok(_) => {},
             Err(e) => { error!("Failed to write data: {}", e); }
