@@ -1,6 +1,7 @@
 import sql from '$lib/server/db';
 import { getUserSerialId } from "$lib/server/userList";
 import { getEmailFromLocals } from "$lib/auth";
+import { Candle, CandleBundle } from "$lib/core/candle";
 
 export async function load({ locals, depends }) {
     depends("data:categoryValue");
@@ -11,7 +12,7 @@ export async function load({ locals, depends }) {
 
     return {
         categoryValueHistory: categoryValueHistory,
-        realtimeCategoryValueHistory: realtimeCategoryValueHistory
+        realtimeCategoryValueHistory: realtimeCategoryValueHistory,
     }
 }
 
@@ -38,6 +39,6 @@ async function loadRealtimeCategoryValueHistory(serialId) {
         INNER JOIN realtime_category_history
             ON category.id = realtime_category_history.category_id
         WHERE category.user_id = ${serialId}
-        ORDER BY realtime_category_history.tr_timestamp DESC
-        LIMIT 1440`;
+        AND realtime_category_history.tr_timestamp >= NOW() - INTERVAL '36 hours'
+        ORDER BY realtime_category_history.tr_timestamp DESC`;
 }

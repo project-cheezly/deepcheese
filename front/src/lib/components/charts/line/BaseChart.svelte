@@ -8,7 +8,7 @@
         if (value < 1000) {
             return new Intl.NumberFormat(value);
         } else if (value < 100000000) {
-            return `${new Intl.NumberFormat().format(value / 10000)}만`;
+            return `${new Intl.NumberFormat().format(Math.round(value / 10000))}만`;
         } else {
             return `${new Intl.NumberFormat().format(value / 100000000)}억`;
         }
@@ -18,36 +18,13 @@
 
     let width = 720;
     let height = 480;
-    let margin = { top: 30, right: 75, bottom: 30, left: 5 };
-
-    let preprocessedData;
-
-    $: {
-        let tmpData = data.reduce((acc, cur) => {
-            if (!acc.get(cur.category_name)) {
-                acc.set(cur.category_name, []);
-            }
-            cur.value = parseFloat(cur.value);
-            acc.get(cur.category_name).push(cur);
-            return acc;
-        }, new Map());
-
-        for (const [key, value] of tmpData) {
-            if (value.length > 50) {
-                const lastValue = value[0];
-                tmpData.set(key, tmpData.get(key).filter((d) => d.timestamp.getMinutes() % 60 === 0));
-                tmpData.set(key, [lastValue, ...tmpData.get(key)])
-            }
-        }
-
-        preprocessedData = tmpData;
-    }
+    let margin = { top: 30, right: 80, bottom: 30, left: 5 };
 
     // x, y 차트 범위 설정
     let xRange, yRange;
     $: {
-        xRange = d3.extent(data, (d) => d.timestamp);
-        yRange = d3.extent(data, (d) => d.value);
+        xRange = d3.extent(data, (d) => d[0]);
+        yRange = d3.extent(data, (d) => d[1]);
 
         const yRangeDiff = yRange[1] - yRange[0];
         yRange[0] = Math.max((yRange[0] - yRangeDiff * 0.1), 0);
@@ -89,22 +66,19 @@
 
     // 꺾은선 생성
     $: line = d3.line()
-        .x((d) => x(d.timestamp))
-        .y((d) => y(d.value));
-
+        .x((d) => x(d[0]))
+        .y((d) => y(d[1]));
 </script>
 
 <svg viewBox="0 0 {width} {height}">
-    {#each preprocessedData as [category_name, category_data]}
-        <path
-            d={line(category_data)}
-            fill="transparent"
-            stroke="rgb(100, 100, 100)"
-            stroke-width="3"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-        />
-    {/each}
+    <path
+        d={line(data)}
+        fill="transparent"
+        stroke="rgb(100, 100, 100)"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+    />
     <g
         bind:this={xAxisLine}
         transform={`translate(0, ${height - margin.bottom})`}
@@ -138,16 +112,30 @@
         stroke="currentColor"
         stroke-width="3"
     >
-        {#each preprocessedData as [category_name, category_data]}
-            {#if category_data.length < 51}
-                {#each category_data as d}
+        {#if data.length < 51}
+            {#each data as d}
                     <circle
-                        cx={x(d.timestamp)}
-                        cy={y(d.value)}
+                        cx={x(d[0])}
+                        cy={y(d[1])}
                         r="4"
                     />
-                {/each}
-            {/if}
-        {/each}
+            {/each}
+        {/if}
+    </g>
+    <g>
+        <rect
+            x={width - margin.right}
+            y={y(data[data.length - 1][1]) - height * 0.04}
+            width={margin.right + 5}
+            height='2.25em'
+            fill="currentColor"
+        />
+        <text
+            x={width - margin.right + 6}
+            y={y(data[data.length - 1][1]) + height * 0.01}
+            text-anchor="start"
+            fill="white"
+            class="text-xl lg:text-base"
+        >{prefixYFormat(data[data.length - 1][1])}</text>
     </g>
 </svg>

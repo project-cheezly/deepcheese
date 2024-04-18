@@ -5,6 +5,9 @@
     import { onMount } from "svelte";
     import { invalidate } from "$app/navigation";
     import CandleChart from "$lib/components/charts/line/CandleChart.svelte";
+    import {CandleBundle} from "$lib/core/candle.js";
+    import AreaChart from "$lib/components/charts/line/AreaChart.svelte";
+    import BarChart from "$lib/components/charts/line/BarChart.svelte";
 
     onMount(() => {
         const interval = setInterval(() => {
@@ -16,68 +19,17 @@
         }
     });
 
-    let categoryValueHistory = [];
-    $: {
-        let temp = $page.data.categoryValueHistory;
-        temp.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    $: categoryRealtimeValueHistory = new CandleBundle()
+        .add($page.data.realtimeCategoryValueHistory)
+        .evaluate();
 
-        let test = temp.reduce((acc, cur) => {
-            if (!acc.has(cur.category_name)) {
-                acc.set(cur.category_name, []);
-            } else {
-                acc.get(cur.category_name).push(cur);
-            }
+    $: categoryDailyValueHistory = new CandleBundle()
+        .add($page.data.categoryValueHistory)
+        .evaluate("day");
 
-            return acc;
-        }, new Map());
-
-        let categoryProperties = new Map();
-        test.forEach((_, k) => {
-            categoryProperties.set(k, {
-                prevValue: 0,
-                inserted: false,
-                closeDate: test.get(k)[test.get(k).length - 1].timestamp.toString()
-            });
-        });
-
-        let prevDate = temp[0].timestamp.toString();
-        let test2 = temp.reduce((acc, cur) => {
-            let currDate = cur.timestamp.toString();
-
-            if (currDate !== prevDate) {
-                categoryProperties.forEach((v, k) => {
-                    if (new Date(prevDate).getTime() < new Date(v.closeDate).getTime() && !v.inserted) {
-                        let prevAccValue = acc.get(prevDate);
-                        acc.set(prevDate, prevAccValue + v.prevValue);
-                    }
-                    categoryProperties.get(k).inserted = false;
-                })
-
-                prevDate = currDate;
-            }
-
-            categoryProperties.get(cur.category_name).inserted = true;
-
-            if (!acc.has(currDate)) {
-                acc.set(currDate, parseFloat(cur.value));
-            } else {
-                let prev = acc.get(currDate);
-                acc.set(currDate, prev + parseFloat(cur.value));
-            }
-
-            categoryProperties.get(cur.category_name).prevValue = parseFloat(cur.value);
-
-            return acc;
-        }, new Map());
-
-        test2.forEach((v, k) => {
-            categoryValueHistory.push({
-                timestamp: new Date(k),
-                category_name: "total",
-                value: v
-            });
-        });
-    }
+    $: categoryAreaValueHistory = new CandleBundle()
+        .add($page.data.categoryValueHistory)
+        .evaluate("day", true);
 </script>
 
 <div class="container">
@@ -89,11 +41,19 @@
     <Container.Content>
         <div class="main-content col-span-2 md:col-span-1">
             <h2>실시간</h2>
-            <CandleChart data={$page.data.realtimeCategoryValueHistory} />
+            <CandleChart data={categoryRealtimeValueHistory.history} />
         </div>
         <div class="main-content col-span-2 md:col-span-1">
             <h2>일간</h2>
-            <BaseChart data={categoryValueHistory} timeScale="date" />
+            <BaseChart data={categoryDailyValueHistory.history} timeScale="date" />
+        </div>
+        <div class="main-content col-span-2 md:col-span-1">
+            <h2>카테고리별</h2>
+            <AreaChart data={categoryAreaValueHistory} timeScale="date" />
+        </div>
+        <div class="main-content col-span-2 md:col-span-1">
+            <h2>누적 수익</h2>
+            <BarChart data={categoryAreaValueHistory} timeScale="date" />
         </div>
     </Container.Content>
 </Container.Root>

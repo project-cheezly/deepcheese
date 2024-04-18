@@ -4,7 +4,9 @@
     import { page } from '$app/stores';
     import CreateDialogContent from "./CreateDialogContent.svelte";
 
-    const { ledger, categories, accounts, pageCnt, maxPage } = $page.data;
+    let ledger = [];
+    $: ledger = $page.data.ledger;
+    const { categories, accounts, pageCnt, maxPage } = $page.data;
 
     const tradeType = {
         '1': '매수',
