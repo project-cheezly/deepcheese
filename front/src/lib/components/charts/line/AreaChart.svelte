@@ -100,7 +100,7 @@
             transform={`translate(${x(tick)}, ${margin.top})`}
             x2="0"
             y2="{height - margin.bottom - margin.top + 20}"
-            stroke="rgb(156, 163, 175)"
+            stroke="var(--md-sys-color-outline)"
             stroke-dasharray="4"
         />
     {/each}
@@ -109,7 +109,7 @@
             transform={`translate(${margin.left}, ${y(tick)})`}
             x2="{width - margin.right - margin.left}"
             y2="0"
-            stroke="rgb(156, 163, 175)"
+            stroke="var(--md-sys-color-outline)"
             stroke-width="0.5"
         />
     {/each}

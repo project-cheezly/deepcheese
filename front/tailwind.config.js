@@ -12,9 +12,14 @@ export default {
     },
     extend: {
       colors: {
-        border: 'hsl(var(--border) / <alpha-value>)',
-        background: 'hsl(var(--background) / <alpha-value>)',
-        foreground: 'hsl(var(--foreground) / <alpha-value>)',
+        primary: 'var(--md-sys-color-primary)',
+        background: 'var(--md-sys-color-background)',
+        border: 'var(--md-sys-color-outline)',
+        text: 'var(--md-sys-color-on-background)',
+        foreground: 'var(--md-sys-color-on-background)',
+
+        surface: 'var(--md-sys-color-surface-container)',
+        
         muted: {
           DEFAULT: 'hsl(var(--muted) / <alpha-value>)',
           foreground: 'hsl(var(--muted-foreground) / <alpha-value>)',

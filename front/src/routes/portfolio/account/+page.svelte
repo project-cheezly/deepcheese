@@ -1,42 +1,41 @@
 <script>
     import { page } from '$app/stores';
     import DeleteDialog from '$lib/components/DeleteDialog.svelte';
+    import * as SingleContainer from "$lib/components/layout/single";
+    import * as DoubleContainer from "$lib/components/layout/double";
     import * as Container from '$lib/components/double-layer-container';
     import * as Dialog from '$lib/components/create-update-catalog';
     import UpdateDialogContent from "./UpdateDialogContent.svelte";
     import CreateDialogContent from "./CreateDialogContent.svelte";
 
     const accounts = $page.data.accounts;
-    console.log(accounts);
 </script>
 
-<div class="container">
-    <h1 class="main-content-large">계좌</h1>
-    <div/>
-</div>
+<SingleContainer.Root>
+    <SingleContainer.Title>계좌</SingleContainer.Title>
+</SingleContainer.Root>
 
-<Container.Root>
+
+<DoubleContainer.Root>
     {#if accounts.length === 0}
         <p class="text-center text-gray-400 pt-24">거래 기록이 존재하지 않습니다.</p>
     {/if}
     {#each accounts as account}
-        <Container.Content>
-            <div>
-                <Container.ContentHeader>
-                    {account.name}
-                </Container.ContentHeader>
-                <p class="main-content-small">{account.number}</p>
-                <div class="main-content-small space-x-4">
+        <DoubleContainer.Content>
+            <DoubleContainer.Inner>
+                <h2>{account.name}</h2>
+                <p>{account.number}</p>
+                <div class="space-x-2">
                     <Dialog.Root title="수정" let:closeDialog>
                         <UpdateDialogContent {...account} closeDialog={closeDialog} />
                     </Dialog.Root>
                     <DeleteDialog id={account.id} />
                 </div>
-            </div>
-            <Container.Description>
+            </DoubleContainer.Inner>
+            <DoubleContainer.InnerLarge>
                 {#each account.assets as asset}
                     <div class="grid grid-cols-2">
-                        <div>
+                        <div class="space-y-">
                             <h4>{asset.name}</h4>
                             <p class="font-semibold text-gray-400">{asset.category_name} | {asset.amount}주</p>
                         </div>
@@ -62,12 +61,12 @@
                         </div>
                     </div>
                 {/each}
-            </Container.Description>
-        </Container.Content>
+            </DoubleContainer.InnerLarge>
+        </DoubleContainer.Content>
     {/each}
-    <div class="main-content">
+    <div class="p-4">
         <Dialog.Root title="계좌 추가" let:closeDialog>
             <CreateDialogContent {closeDialog} />
         </Dialog.Root>
     </div>
-</Container.Root>
+</DoubleContainer.Root>

@@ -1,5 +1,8 @@
 <script>
     import { page } from '$app/stores';
+    import * as SingleContainer from "$lib/components/layout/single";
+    import * as DoubleContainer from "$lib/components/layout/double";
+
     import * as Container from '$lib/components/double-layer-container';
     import DeleteDialog from "$lib/components/DeleteDialog.svelte";
     import * as Dialog from "$lib/components/create-update-catalog";
@@ -9,18 +12,17 @@
     let categories = $page.data.categories;
 </script>
 
-<div class="container">
-    <h1 class="main-content-large">카테고리</h1>
-    <div/>
-</div>
+<SingleContainer.Root>
+    <SingleContainer.Title>카테고리</SingleContainer.Title>
+</SingleContainer.Root>
 
-<Container.Root>
+<DoubleContainer.Root>
     {#if categories.length === 0}
         <p class="text-center text-gray-400 pt-24">거래 기록이 존재하지 않습니다.</p>
     {/if}
     {#each categories as category}
-        <Container.Content>
-            <div>
+        <DoubleContainer.Content>
+            <DoubleContainer.Inner>
                 <Container.ContentHeader>
                     {category.name}
                 </Container.ContentHeader>
@@ -30,8 +32,8 @@
                     </Dialog.Root>
                     <DeleteDialog id={category.id} />
                 </div>
-            </div>
-            <Container.Description>
+            </DoubleContainer.Inner>
+            <DoubleContainer.InnerLarge>
                 {#each category.assets as asset}
                     <div class="grid grid-cols-2">
                         <div>
@@ -60,12 +62,12 @@
                         </div>
                     </div>
                 {/each}
-            </Container.Description>
-        </Container.Content>
+                </DoubleContainer.InnerLarge>
+        </DoubleContainer.Content>
     {/each}
-    <div class="main-content pt-4">
+    <div class="p-4">
         <Dialog.Root title="카테고리 추가" let:closeDialog>
             <CreateDialogContent closeDialog={closeDialog} />
         </Dialog.Root>
     </div>
-</Container.Root>
+</DoubleContainer.Root>

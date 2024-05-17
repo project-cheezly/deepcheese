@@ -101,7 +101,7 @@
             transform={`translate(${x(tick)}, ${margin.top})`}
             x2="0"
             y2="{height - margin.bottom - margin.top + 20}"
-            stroke="rgb(156, 163, 175)"
+            stroke="var(--md-sys-color-outline)"
             stroke-dasharray="4"
         />
     {/each}
@@ -110,12 +110,12 @@
             transform={`translate(${margin.left}, ${y(tick)})`}
             x2="{width - margin.right - margin.left}"
             y2="0"
-            stroke="rgb(156, 163, 175)"
+            stroke="var(--md-sys-color-outline)"
             stroke-width="0.5"
         />
     {/each}
     <g
-        fill="rgba(165, 165, 165, 1)"
+        fill="var(--md-sys-color-inverse-primary)"
         stroke="currentColor"
         stroke-width="0"
     >
@@ -133,7 +133,7 @@
             cx={x(data[data.length - 1][0].set('minute', 0))}
             cy={y(data[data.length - 1][1])}
             r="6"
-            fill="currentColor"
+            fill="var(--md-sys-color-primary)"
         />
         <g>
             <rect
@@ -141,13 +141,13 @@
                 y={y(data[data.length - 1][1]) - height * 0.04}
                 width={margin.right + 5}
                 height='2.25em'
-                fill="currentColor"
+                fill="var(--md-sys-color-primary-container)"
             />
             <text
                 x={width - margin.right + 6}
                 y={y(data[data.length - 1][1]) + height * 0.01}
                 text-anchor="start"
-                fill="white"
+                fill="var(--md-sys-color-on-primary-container)"
                 class="text-xl lg:text-base"
             >{prefixYFormat(data[data.length - 1][1])}</text>
         </g>
