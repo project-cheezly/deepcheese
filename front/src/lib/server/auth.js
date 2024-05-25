@@ -1,16 +1,23 @@
 import { SvelteKitAuth } from "@auth/sveltekit";
 import Github from '@auth/core/providers/github';
-import { GITHUB_ID, GITHUB_SECRET } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { dev } from "$app/environment";
+import { building } from "$app/environment";
 
-export const { handle, signIn, signOut } = SvelteKitAuth({
+if (!building) {
+
+}
+
+const { handle, signIn, signOut } = SvelteKitAuth({
     providers: [
         Github({
-            clientId: GITHUB_ID,
-            clientSecret: GITHUB_SECRET,
+            clientId: env.GITHUB_ID,
+            clientSecret: env.GITHUB_SECRET,
         })
     ]
 });
+
+export { handle, signIn, signOut };
 
 /**
  *  현재 세션에 접속한 유저의 이메일을 조회합니다.

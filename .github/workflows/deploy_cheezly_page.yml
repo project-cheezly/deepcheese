@@ -1,0 +1,67 @@
+name: Deploy Cheezly Page
+
+on:
+  push:
+    paths:
+      - 'front/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Setup SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+      - name: Create .env file
+        env:
+          ENV_FILE_CONTENT: ${{ secrets.FRONT_ENV }}
+        run: |
+          echo "$ENV_FILE_CONTENT" > front/.env
+
+      - name: Establish SSH Tunnel
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -f -N -L 5000:localhost:5000 $SSH_USER@$SSH_HOST
+          sleep 10 # Give the tunnel time to establish
+
+      - name: Build and Push Docker image for ARM64
+        run: |
+          cd front
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} localhost:5000
+          docker buildx build --platform linux/arm64 -t localhost:5000/cheezly-page:latest --push .
+
+      - name: Deploy to On-Premise Server
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          ssh $SSH_USER@$SSH_HOST << 'EOF'
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} localhost:5000
+            docker pull localhost:5000/cheezly-page:latest
+            docker stop cheezly-page || true
+            docker rm cheezly-page || true
+            docker run -d --name cheezly-page -p 80:80 -v kis_token:/tmp/kis_rust --env-file ~/env/.front_env --network cheese-network localhost:5000/cheezly-page:latest
+          EOF

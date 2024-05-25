@@ -1,6 +1,6 @@
 import sql from '$lib/server/db';
 import { getUserSerialId } from "$lib/server/userList";
-import { getEmailFromLocals } from "$lib/auth";
+import { getEmailFromLocals } from "$lib/server/auth";
 
 export async function load({ locals, url }){
     const page = parseInt(url.searchParams.get('page')) || 1;

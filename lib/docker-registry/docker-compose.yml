@@ -1,0 +1,17 @@
+services:
+  registry:
+    image: registry:2
+    ports:
+      - 5000:5000
+    volumes:
+      - ./certs:/certs
+      - registry-data:/var/lib/registry
+    environment:
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Docker Registry Realm
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+      REGISTRY_HTTP_TLS_CERTIFICATE: /certs/ssl_certificate.pem
+      REGISTRY_HTTP_TLS_KEY: /certs/ssl_private.pem
+
+volumes:
+  registry-data:

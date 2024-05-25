@@ -1,4 +1,4 @@
-import { getEmailFromLocals } from '$lib/auth';
+import { getEmailFromLocals } from '$lib/server/auth';
 import { getUserSerialId } from "$lib/server/userList.js";
 import sql from "$lib/server/db";
 

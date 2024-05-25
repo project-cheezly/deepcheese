@@ -2,6 +2,10 @@ import sql from '$lib/server/db';
 import { dev } from '$app/environment';
 
 async function getUserList() {
+    if (typeof sql !== 'function') {
+        return {};
+    }
+
     const users = await sql`SELECT * FROM sheet_user`;
     return users.reduce((acc, user) => {
         acc[user.email] = user.serial_id;

@@ -1,6 +1,6 @@
 import sql from '$lib/server/db';
 import { getUserSerialId } from "$lib/server/userList";
-import { getEmailFromLocals } from "$lib/auth";
+import { getEmailFromLocals } from "$lib/server/auth";
 import { Candle, CandleBundle } from "$lib/core/candle";
 
 export async function load({ locals, depends }) {

@@ -1,9 +1,8 @@
-FROM node:lts-alpine3.19 AS Cheeseboard
+FROM node:lts-alpine3.20 AS CheezlyPage
 
 WORKDIR /app
 
-COPY ./front .
-COPY .env .
+COPY . .
 
 RUN npm ci
 
