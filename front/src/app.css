@@ -5,6 +5,33 @@
 
 @layer base {
     :root {
+        --color-outline: #000000;
+        --color-primary: #f59400;
+        --color-primary-tinted: #8e8e93;
+        --color-container: #aeaeb2;
+        --color-background: #ffffff;
+
+        --color-blue: #2962FF;
+        --color-red: #ff3126;
+        --color-orange: #ffa914;
+        --color-yellow: #f5c400;
+
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --color-outline: #EEEEEE;
+            --color-primary: #ff912b;
+            --color-background:#303030;
+
+            --color-blue: #82B1FF;
+            --color-red: #ff5044;
+            --color-orange: #ffa914;
+            --color-yellow: #ffe014;
+        }
+    }
+
+    :root {
         --background: 0 0% 100%;
         --border: 0 0% 7%;
 
@@ -24,7 +51,7 @@
     }
 
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-outline;
     }
 
     h1 {
@@ -50,27 +77,7 @@
     .text-lead {
         @apply text-xl text-muted-foreground;
     }
-
-    .main-container {
-        @apply md:mx-4;
-    }
-
-    .main-content {
-        @apply px-4 py-3;
-    }
-
-    .main-content-small {
-        @apply px-4 py-1.5;
-    }
-
-    .main-content-large {
-        @apply px-4 py-6;
-    }
-
-    .main-inner-content {
-        @apply px-4 pb-3;
-    }
-
+    
     .button-small {
         @apply underline underline-offset-4 font-semibold;
     }
@@ -78,6 +85,14 @@
 
 @layer components {
     .container {
-        @apply divide-y md:px-4;
+        @apply md:px-4 xl:max-w-screen-xl self-auto;
+    }
+
+    .content--main > * {
+        @apply p-4;
+    }
+
+    .content--main--large {
+        @apply px-4 py-8;
     }
 }

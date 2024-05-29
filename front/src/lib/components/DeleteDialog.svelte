@@ -8,7 +8,7 @@
 </script>
 
 <AlertDialog.Root bind:open>
-    <AlertDialog.Trigger class="button-small text-red-600">
+    <AlertDialog.Trigger class="button-small text-warn">
         삭제
     </AlertDialog.Trigger>
     <AlertDialog.Portal>
@@ -27,7 +27,7 @@
             <form method="POST" action="?/delete" class="space-x-4 text-right">
                 <input type="hidden" name="id" value="{id}" />
                 <button class="button-small" on:click={() => { open=false; }}>취소</button>
-                <button class="button-small text-red-600">삭제</button>
+                <button class="button-small text-warn">삭제</button>
             </form>
         </AlertDialog.Content>
     </AlertDialog.Portal>

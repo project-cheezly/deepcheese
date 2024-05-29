@@ -2,7 +2,12 @@
     import * as d3 from 'd3';
     import { multiFormat, localeMultiFormat } from '../time_format_locale.js';
 
-    const colors = ["#4e79a7","#f28e2c","#e15759","#76b7b2","#59a14f","#edc949","#af7aa1","#ff9da7","#9c755f","#bab0ab"];
+    const colors = [
+        "var(--color-red)",
+        "var(--color-orange)",
+        "var(--color-blue)",
+        "var(--color-yellow)",
+    ];
 
     export let data = [];
 

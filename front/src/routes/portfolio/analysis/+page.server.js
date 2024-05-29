@@ -7,8 +7,8 @@ export async function load({ locals, depends }) {
     depends("data:categoryValue");
 
     const serialId = getUserSerialId(await getEmailFromLocals(locals));
-    const categoryValueHistory = await loadCategoryValueHistory(serialId);
-    const realtimeCategoryValueHistory = await loadRealtimeCategoryValueHistory(serialId);
+    const categoryValueHistory = loadCategoryValueHistory(serialId);
+    const realtimeCategoryValueHistory = loadRealtimeCategoryValueHistory(serialId);
 
     return {
         categoryValueHistory: categoryValueHistory,

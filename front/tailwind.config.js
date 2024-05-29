@@ -12,13 +12,18 @@ export default {
     },
     extend: {
       colors: {
-        border: 'hsl(var(--border) / <alpha-value>)',
-        background: 'hsl(var(--background) / <alpha-value>)',
+        border: 'var(--color-outline)',
+        outline: 'var(--color-outline)',
+        background: 'var(--color-background)',
         foreground: 'hsl(var(--foreground) / <alpha-value>)',
         muted: {
           DEFAULT: 'hsl(var(--muted) / <alpha-value>)',
           foreground: 'hsl(var(--muted-foreground) / <alpha-value>)',
-        }
+        },
+        primary: 'var(--color-primary)',
+        decrease: 'var(--color-blue)',
+        increase: 'var(--color-red)',
+        warn: 'var(--color-red)',
       }
     },
   },

@@ -74,8 +74,8 @@
     <path
         d={line(data)}
         fill="transparent"
-        stroke="rgb(100, 100, 100)"
-        stroke-width="3"
+        stroke="var(--color-primary)"
+        stroke-width="2.5"
         stroke-linecap="round"
         stroke-linejoin="round"
     />
@@ -123,19 +123,21 @@
         {/if}
     </g>
     <g>
+        {#if data.length > 0}
         <rect
             x={width - margin.right}
             y={y(data[data.length - 1][1]) - height * 0.04}
             width={margin.right + 5}
             height='2.25em'
-            fill="currentColor"
+            fill="var(--color-outline)"
         />
         <text
             x={width - margin.right + 6}
             y={y(data[data.length - 1][1]) + height * 0.01}
             text-anchor="start"
-            fill="white"
+            fill="var(--color-background)"
             class="text-xl lg:text-base"
         >{prefixYFormat(data[data.length - 1][1])}</text>
+        {/if}
     </g>
 </svg>

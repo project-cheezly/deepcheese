@@ -39,15 +39,20 @@
     // x, y 차트 범위 설정
     let xRange, yRange;
     $: {
-        xRange = d3.extent(data, (d) => d[0]);
-        yRange = d3.extent(data, (d) => d[1]);
+        try {
+            xRange = d3.extent(data, (d) => d[0]);
+            yRange = d3.extent(data, (d) => d[1]);
 
-        xRange[0] = xRange[0].set('minute', 0).set('second', 0).add(0, 'minute');
-        xRange[1] = xRange[1].set('minute', 0).set('second', 0).add(40, 'minute');
+            xRange[0] = xRange[0].set('minute', 0).set('second', 0).add(0, 'minute');
+            xRange[1] = xRange[1].set('minute', 0).set('second', 0).add(40, 'minute');
 
-        const yRangeDiff = yRange[1] - yRange[0];
-        yRange[0] = Math.max((yRange[0] - yRangeDiff * 0.1), 0);
-        yRange[1] += yRangeDiff * 0.1;
+            const yRangeDiff = yRange[1] - yRange[0];
+            yRange[0] = Math.max((yRange[0] - yRangeDiff * 0.1), 0);
+            yRange[1] += yRangeDiff * 0.1;
+        } catch (e) {
+            xRange = [new Date(), new Date()];
+            yRange = [0, 0];
+        }
     }
 
     // x, y 축 생성
@@ -115,7 +120,7 @@
         />
     {/each}
     <g
-        fill="rgba(165, 165, 165, 1)"
+        fill="var(--color-primary-tinted)"
         stroke="currentColor"
         stroke-width="0"
     >
@@ -127,13 +132,15 @@
                 height="{Math.max(y(maxVal) - y(minVal) + 3, 12)}"
                 rx="6"
                 ry="6"
+                stroke="currentColor"
             />
         {/each}
+        {#if data.length > 0}
         <circle
             cx={x(data[data.length - 1][0].set('minute', 0))}
             cy={y(data[data.length - 1][1])}
             r="6"
-            fill="currentColor"
+            fill="var(--color-primary)"
         />
         <g>
             <rect
@@ -141,15 +148,16 @@
                 y={y(data[data.length - 1][1]) - height * 0.04}
                 width={margin.right + 5}
                 height='2.25em'
-                fill="currentColor"
+                fill="var(--color-outline)"
             />
             <text
                 x={width - margin.right + 6}
                 y={y(data[data.length - 1][1]) + height * 0.01}
                 text-anchor="start"
-                fill="white"
+                fill="var(--color-background)"
                 class="text-xl lg:text-base"
             >{prefixYFormat(data[data.length - 1][1])}</text>
         </g>
+        {/if}
     </g>
 </svg>
