@@ -45,7 +45,7 @@ jobs:
         run: |
           cd front
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} localhost:5000
-          docker buildx build --platform linux/arm64 -t localhost:5000/cheezly-page:latest --push .
+          docker buildx build --platform linux/arm64 -t localhost:5000/cheeseboard:latest --push .
 
       - name: Deploy to On-Premise Server
         env:
@@ -60,8 +60,8 @@ jobs:
           echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
           ssh $SSH_USER@$SSH_HOST << 'EOF'
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} localhost:5000
-            docker pull localhost:5000/cheezly-page:latest
-            docker stop cheezly-page || true
-            docker rm cheezly-page || true
-            docker run -d --name cheezly-page -p 80:80 -v kis_token:/tmp/kis_rust --env-file ~/env/.front_env --network cheese-network localhost:5000/cheezly-page:latest
+            docker pull localhost:5000/cheeseboard:latest
+            docker stop cheeseboard || true
+            docker rm cheeseboard || true
+            docker run -d --name cheeseboard -p 80:80 -v kis_token:/tmp/kis_rust --env-file ~/env/.front_env --network cheese-network localhost:5000/cheeseboard:latest
           EOF
