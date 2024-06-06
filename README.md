@@ -1,5 +1,7 @@
 # Cheezly
 
+[![Deploy Cheeseboard](https://github.com/project-cheezly/deepcheese/actions/workflows/deploy_cheeseboard.yml/badge.svg)](https://github.com/project-cheezly/deepcheese/actions/workflows/deploy_cheeseboard.yml)
+
 ## 폴더 구성
 
 - `front`: Cheeseboard
