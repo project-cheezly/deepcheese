@@ -1,4 +1,4 @@
-name: Deploy Cheezly Page
+name: Deploy Cheeseboard 
 
 on:
   push:
@@ -63,5 +63,5 @@ jobs:
             docker pull localhost:5000/cheeseboard:latest
             docker stop cheeseboard || true
             docker rm cheeseboard || true
-            docker run -d --name cheeseboard -p 80:80 -v kis_token:/tmp/kis_rust --env-file ~/env/.front_env --network cheese-network localhost:5000/cheeseboard:latest
+            docker run -d --name cheeseboard -p 80:3000 -v kis_token:/tmp/kis_rust --env-file ~/env/.front_env --network cheese-network --restart=unless-stopped localhost:5000/cheeseboard:latest
           EOF
