@@ -61,7 +61,7 @@ CurrentCategoryBankValue AS (
             ELSE CurrencyLatestValue.value
             END)) AS value
     FROM bank_balance
-    INNER JOIN CurrencyLatestValue
+    LEFT OUTER JOIN CurrencyLatestValue
         ON bank_balance.currency_id = CurrencyLatestValue.currency_id
     GROUP BY bank_balance.category_id
 ),
