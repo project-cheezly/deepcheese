@@ -37,8 +37,9 @@ jobs:
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
         run: |
-          ssh -f -N -L 5000:localhost:5000 $SSH_USER@$SSH_HOST
+          ssh -fNL 5000:localhost:5000 $SSH_USER@$SSH_HOST -p $SSH_PORT
           sleep 10 # Give the tunnel time to establish
 
       - name: Build and Push Docker image for ARM64
