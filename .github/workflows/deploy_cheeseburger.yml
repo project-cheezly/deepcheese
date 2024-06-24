@@ -1,0 +1,49 @@
+name: Deploy Cheeseburger
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        profile: minimal
+        target: x86_64-pc-windows-gnu
+
+    - name: Install mingw-w64
+      run: sudo apt-get install -y mingw-w64 protobuf-compiler
+
+    - name: Build
+      id: build
+      run: cargo build --release
+      working-directory: agent/cheeseburger
+
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+    - name: Add known hosts
+      env:
+        CHEESEBURGER_KNOWN_HOSTS: ${{ secrets.CHEESEBURGER_KNOWN_HOSTS }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$CHEESEBURGER_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+
+    - name: Deploy to Azure VM
+      if: steps.build.outcome == 'success'
+      run: scp -P 8022 agent/cheeseburger/target/x86_64-pc-windows-gnu/release/cheeseburger.exe ${{ secrets.CHEESEBURGER_AZURE_VM_USER }}@${{ secrets.CHEESEBURGER_AZURE_VM_HOST }}:C:/deepcheese/cheeseburger/
+
+    - name: Deploy to Latte Panda
+      if: steps.build.outcome == 'success'
+      run: scp -P 8022 agent/cheeseburger/target/x86_64-pc-windows-gnu/release/cheeseburger.exe ${{ secrets.CHEESEBURGER_LATTEPANDA_USER }}@${{ secrets.CHEESEBURGER_LATTEPANDA_HOST }}:C:/deepcheese/cheeseburger/
