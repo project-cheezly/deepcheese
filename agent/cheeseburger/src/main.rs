@@ -17,7 +17,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Sync + Send>> {
     env_logger::init();
 
     let stream_manager = Arc::new(Mutex::new(StreamManager::new()));
-    let pool = Arc::new(get_pool::<Postgres>().await?);
+
+    let postgres = get_pool::<Postgres>().await;
+    if let Ok(pool) = postgres {
+        log::info!("Connected to database");
+
+        let pool = Arc::new(pool);
+        if let Err(e) = start_recorder_service(pool).await {
+            log::error!("Error starting recorder service: {}", e);
+        }
+    } else {
+        log::error!("Failed to connect to database");
+    }
 
     if let Err(e) = start_cheon_more_service().await {
         log::error!("Error starting cheon more service: {}", e);
@@ -29,10 +40,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Sync + Send>> {
 
     if let Err(e) = start_cheeseburger_service(stream_manager.clone()).await {
         log::error!("Error starting cheeseburger service: {}", e);
-    };
-
-    if let Err(e) = start_recorder_service(pool).await {
-        log::error!("Error starting recorder service: {}", e);
     };
 
     tokio::select! {
