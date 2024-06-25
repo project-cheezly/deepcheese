@@ -42,8 +42,8 @@ jobs:
 
     - name: Deploy to Azure VM
       if: steps.build.outcome == 'success'
-      run: scp -P 8022 agent/cheeseburger/target/x86_64-pc-windows-gnu/release/cheeseburger.exe ${{ secrets.CHEESEBURGER_AZURE_VM_USER }}@${{ secrets.CHEESEBURGER_AZURE_VM_HOST }}:C:/deepcheese/cheeseburger/
+      run: scp -P ${{ secrets.CHEESEBURGER_AZURE_VM_SSH_PORT }} agent/cheeseburger/target/x86_64-pc-windows-gnu/release/cheeseburger.exe ${{ secrets.CHEESEBURGER_AZURE_VM_USER }}@${{ secrets.CHEESEBURGER_AZURE_VM_HOST }}:C:/deepcheese/cheeseburger/
 
     - name: Deploy to Latte Panda
       if: steps.build.outcome == 'success'
-      run: scp -P 8022 agent/cheeseburger/target/x86_64-pc-windows-gnu/release/cheeseburger.exe ${{ secrets.CHEESEBURGER_LATTEPANDA_USER }}@${{ secrets.CHEESEBURGER_LATTEPANDA_HOST }}:C:/deepcheese/cheeseburger/
+      run: scp -P ${{ secrets.CHEESEBURGER_LATTEPANDA_SSH_PORT }} agent/cheeseburger/target/x86_64-pc-windows-gnu/release/cheeseburger.exe ${{ secrets.CHEESEBURGER_LATTEPANDA_USER }}@${{ secrets.CHEESEBURGER_LATTEPANDA_HOST }}:C:/deepcheese/cheeseburger/

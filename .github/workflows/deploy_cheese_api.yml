@@ -1,0 +1,66 @@
+name: Deploy CheeseAPI
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      working-directory: agent/CheeseAPI
+      run: dotnet restore
+
+    - name: Build
+      working-directory: agent/CheeseAPI
+      run: dotnet build --configuration Release --no-restore
+    
+    - name: Publish
+      working-directory: agent/CheeseAPI
+      run: dotnet publish --configuration Release --no-restore --output ./CheeseAPI CheeseAPI.csproj
+
+    - name: Archive Publish Directory
+      uses: actions/upload-artifact@v4
+      with:
+        name: publish
+        path: agent/CheeseAPI/CheeseAPI
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name : Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: publish
+        path: ./CheeseAPI
+    
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.DEPLOY_SSH_KEY }}
+
+    - name: Add known hosts
+      env:
+        CHEESEBURGER_KNOWN_HOSTS: ${{ secrets.CHEESEBURGER_KNOWN_HOSTS }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$CHEESEBURGER_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+
+    - name: Deploy to Azure VM
+      if: always()
+      run: scp -P ${{ secrets.CHEESEBURGER_AZURE_VM_SSH_PORT }} -r ./CheeseAPI ${{ secrets.CHEESEBURGER_AZURE_VM_USER }}@${{ secrets.CHEESEBURGER_AZURE_VM_HOST }}:C:/deepcheese/
+
+    - name: Deploy to LattePanda
+      if: always()
+      run: scp -P ${{ secrets.CHEESEBURGER_LATTEPANDA_SSH_PORT }} -r ./CheeseAPI ${{ secrets.CHEESEBURGER_LATTEPANDA_USER }}@${{ secrets.CHEESEBURGER_LATTEPANDA_HOST }}:C:/deepcheese/
