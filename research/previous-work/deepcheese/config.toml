@@ -1,0 +1,58 @@
+[data_loader]
+
+
+# Limit Order Book data
+[data_loader.lob]
+start_time = 08:45:00
+end_time = 15:35:00
+
+[data_loader.lob.indi]
+path = "./data/indi_data/"
+pattern = "FH_*.csv"
+
+[data_loader.lob.kis]
+path = "./data/kis_data/"
+pattern = "H0IFASP0_106*.csv"
+
+# Transaction data
+[data_loader.tr]
+
+[data_loader.tr.indi]
+path = "./data/indi_data/"
+pattern = "FC_*.csv"
+
+[data_loader.tr.kis]
+path = "./data/kis_data/"
+pattern = "H0IFCNT0_106*.csv"
+
+[dataset]
+
+[dataset.moving_window]
+level = 5
+time_window = 100
+price_window = 10
+predict_horizon = 100
+
+cache_dir = "./data/cache/moving_window"
+
+[dataset.multiple_moving_window]
+predict_horizon = 100
+
+[dataset.multiple_moving_window.large]
+time_window = 1000
+price_window = 20
+
+[dataset.multiple_moving_window.medium]
+time_window = 500
+price_window = 15
+
+[dataset.multiple_moving_window.small]
+time_window = 100
+price_window = 10
+
+[dataset.moving_window_3d]
+concat_image_size = 10
+
+[train]
+val_ratio = 0.1
+test_ratio = 0.2
