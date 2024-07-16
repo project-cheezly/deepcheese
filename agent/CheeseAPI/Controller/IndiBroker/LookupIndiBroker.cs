@@ -59,6 +59,8 @@ namespace CheeseAPI.Controller.IndiBroker
             var nRowSize = control?.GetMultiRowCount();
             short rqid = e.rqid;
 
+            logger.LogInformation("RESP: {}", queryCode);
+
             IMessage response = (queryCode ?? "") switch
             {
                 "AccountList" => Marshaller.LookupAccountList(control!, nRowSize ?? 0),
@@ -68,6 +70,8 @@ namespace CheeseAPI.Controller.IndiBroker
                 "TR_FNCHART" => Marshaller.LookupContinuousFutureCandle(control!, nRowSize ?? 0),
                 "SABC100U1" => Marshaller.TradeFutureOption(control!),
                 "SABC967Q1" => Marshaller.LookupFutureOptionContract(control!, nRowSize ?? 0),
+                "fut_mst" => Marshaller.LookupFuturesInfo(control!, nRowSize ?? 0),
+                "TR_9053" => Marshaller.LookupFuturePreviousCandle(control!),
                 _ => throw new NotImplementedException(),
             };
 

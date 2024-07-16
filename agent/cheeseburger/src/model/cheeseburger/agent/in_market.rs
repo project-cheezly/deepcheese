@@ -130,12 +130,8 @@ async fn get_future_code_and_multiplier(future_type: &FutureType)
         .into_iter()
         .filter(|x|
             x.base_asset_code == future_type.base_code()
-            && x.spread_lead_month_standard_code.is_some()
+            && x.abbr_code.starts_with("1") 
         )
-        .filter_map(|x| match x.spread_back_month_standard_code {
-            Some(ref code) if code == " " => Some(x),
-            _ => None
-        })
         .filter_map(|x| match x.final_trade_date {
             Some(date) => Some((x.abbr_code, convert_to_naive_date(date), x.multiplier)),
             None => None

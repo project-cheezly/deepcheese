@@ -91,6 +91,13 @@ namespace CheeseAPI.Controller
                 AskPrice = GetDoubleFromControl(18, control),
                 BidPrice = GetDoubleFromControl(19, control),
                 OpenInterest = GetIntFromControl(11, control),
+                Candle = new Candle
+                {
+                    Open = GetDoubleFromControl(12, control),
+                    High = GetDoubleFromControl(13, control),
+                    Low = GetDoubleFromControl(14, control),
+                    Close = GetDoubleFromControl(4, control),
+                }
             };
         }
 
@@ -196,6 +203,63 @@ namespace CheeseAPI.Controller
             }
 
             return result;
+        }
+
+        public static FuturesInfoResponse LookupFuturesInfo(AxshinhanINDI64 control, short v)
+        {
+            var result = new FuturesInfoResponse();
+
+            for (short row = 0; row < v; row++)
+            {
+                var rawDate = GetIntFromMultiControl(row, 7, control);
+                var date = new Date
+                {
+                    Year = rawDate / 10000,
+                    Month = (rawDate % 10000) / 100,
+                    Day = rawDate % 100,
+                };
+
+                var spreadLeadMonthStandardCode = GetStringFromMultiControl(row, 5, control);
+                var spreadBackMonthStandardCode = GetStringFromMultiControl(row, 6, control);
+
+                var target = new FuturesInfo
+                {
+                    StandardCode = GetStringFromMultiControl(row, 0, control),
+                    AbbrCode = GetStringFromMultiControl(row, 1, control),
+                    Name = GetStringFromMultiControl(row, 2, control),
+                    AbbrName = GetStringFromMultiControl(row, 3, control),
+                    SupplementCode = GetStringFromMultiControl(row, 4, control),
+                    BaseAssetCode = GetStringFromMultiControl(row, 8, control),
+                    
+                    FinalTradeDate = date,
+                    Multiplier = GetIntFromMultiControl(row, 9, control),
+                };
+
+                if (spreadLeadMonthStandardCode != "")
+                {
+                    target.SpreadLeadMonthStandardCode = spreadLeadMonthStandardCode;
+                }
+
+                if (spreadBackMonthStandardCode != "")
+                {
+                    target.SpreadBackMonthStandardCode = spreadBackMonthStandardCode;
+                }
+
+                result.List.Add(target);
+            }
+
+            return result;
+        }
+
+        public static FuturePreviousCandleResponse LookupFuturePreviousCandle(AxshinhanINDI64 control)
+        {
+            return new FuturePreviousCandleResponse()
+            {
+                Open = GetDoubleFromMultiControl(0, 0, control),
+                High = GetDoubleFromMultiControl(0, 1, control),
+                Low = GetDoubleFromMultiControl(0, 2, control),
+                Close = GetDoubleFromMultiControl(0, 3, control),
+            };
         }
     }
 }

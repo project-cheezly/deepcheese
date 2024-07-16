@@ -18,7 +18,7 @@ pub async fn sell_market_order(
         code: code.to_string(),
         price: 0,
         amount,
-        trade_type: TradeType::Bid,
+        trade_type: TradeType::Ask,
         trade_condition: TradeCondition::NORMAL,
         order_class: OrderClassification::MARKET,
     };
@@ -38,7 +38,7 @@ pub async fn buy_market_order(
         password: account.password.to_string(),
         code: code.to_string(),
         price: 0,
-        trade_type: TradeType::Ask,
+        trade_type: TradeType::Bid,
         amount,
         trade_condition: TradeCondition::NORMAL,
         order_class: OrderClassification::MARKET,

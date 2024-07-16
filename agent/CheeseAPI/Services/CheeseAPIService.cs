@@ -106,5 +106,22 @@ namespace CheeseAPI.Services
             logger.LogInformation("REQ: LookupFutureOptionContract");
             return await lookupController.LookupFutureOptionContract(request);
         }
+
+        async public override Task<FuturesInfoResponse> LookupFuturesInfo(
+            Empty request,
+            ServerCallContext context
+        ) {
+            logger.LogInformation("REQ: LookupFuturesInfo");
+            return await lookupController.LookupFuturesInfo();
+        }
+
+        async public override Task<FuturePreviousCandleResponse> LookupFuturePreviousCandle(
+            FuturePreviousCandleRequest request,
+            ServerCallContext context
+        )
+        {
+            logger.LogInformation("REQ: LookupFuturePreviousCandle");
+            return await lookupController.LookupFuturePreviousCandle(request);
+        }
     }
 }
