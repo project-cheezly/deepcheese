@@ -14,7 +14,6 @@ pub fn load() -> Result<ClientConfig, Box<dyn std::error::Error + Sync + Send>> 
 
 #[cfg(test)]
 mod tests {
-    use std::env;
     use super::*;
 
     #[test]

@@ -11,6 +11,7 @@ use crate::client::cheese_api::{
     FutureOptionDepositRequest,
     TransferDepositRequest
 };
+use tracing::{info, warn, error};
 
 use crate::core::account::Account;
 use crate::core::duration;
@@ -21,7 +22,7 @@ pub async fn start_cheon_more_service()
     let config = config::load().await?;
 
     if let Err(e) = validate() {
-        log::error!("Failed to execute cheon_more: {}", e);
+        error!("Failed to execute cheon_more: {}", e);
         return Err(e);
     }
 
@@ -29,8 +30,8 @@ pub async fn start_cheon_more_service()
         let account = config.account;
 
         match transfer_deposit_to_futures(&account).await {
-            Ok(deposit) => log::info!("Moved deposit to futures: {}", deposit),
-            Err(e) => log::warn!("Failed to move deposit to futures: {}", e)
+            Ok(deposit) => info!("Moved deposit to futures: {}", deposit),
+            Err(e) => warn!("Failed to move deposit to futures: {}", e)
         }
 
         let duration_to_finish = duration::get_duration(config.close_time);
@@ -38,11 +39,11 @@ pub async fn start_cheon_more_service()
         time::sleep(duration_to_finish).await;
 
         match transfer_deposit_to_stock(&account).await {
-            Ok(deposit) => log::info!("Moved deposit to stock: {}", deposit),
-            Err(e) => log::warn!("Failed to move deposit to stock: {}", e)
+            Ok(deposit) => info!("Moved deposit to stock: {}", deposit),
+            Err(e) => warn!("Failed to move deposit to stock: {}", e)
         }
 
-        log::info!("cheon_more service finished");
+        info!("cheon_more service finished");
     });
 
     Ok(())

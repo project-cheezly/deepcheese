@@ -12,11 +12,11 @@ pub async fn start_cheeseburger_service(stream_manager: Arc<Mutex<StreamManager>
     let pre_market_result = pre_market(&config.account).await;
 
     if let Err(e) = pre_market_result {
-        log::error!("Error in pre_market: {}", e);
+        tracing::error!("Error in pre_market: {}", e);
     }
 
     if let Err(e) = in_market(&config.account, config.strategy, stream_manager).await {
-        log::error!("Error in in_market: {}", e);
+        tracing::error!("Error in in_market: {}", e);
     }
 
     Ok(())

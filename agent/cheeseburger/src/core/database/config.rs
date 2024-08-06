@@ -1,5 +1,6 @@
 use std::fmt::Display;
 use serde::Deserialize;
+use tracing::error;
 use crate::core::base_config;
 
 #[derive(Deserialize, Debug, Clone)]
@@ -24,7 +25,7 @@ pub(super) async fn load()
     base_config::declare_config!("database", DatabaseConfig);
     base_config::load_mac!()
         .or_else(|e| {
-            log::error!("Failed to load config: {}", e);
+            error!("Failed to load config: {}", e);
             Err(e)
         })
 }

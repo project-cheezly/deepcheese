@@ -10,15 +10,15 @@ use crate::core::future::TradeType;
 pub(crate) async fn pre_market(account: &Account)
     -> Result<(), Box<dyn std::error::Error + Send + Sync>>
 {
-    log::info!("Start pre-market");
+    tracing::info!("Start pre-market");
     let mut client = client::new().await?;
 
-    log::info!("Get previous contracts");
+    tracing::info!("Get previous contracts");
     let mut contracts = get_previous_contract(&mut client, account).await?;
     filter_contracts(&mut contracts);
 
     for contract in contracts {
-        log::info!("Sell contract: {}, {}", contract.code, contract.closable_amount);
+        tracing::info!("Sell contract: {}, {}", contract.code, contract.closable_amount);
         sell_market_order(&mut client, account, &contract.code, contract.closable_amount).await?;
     }
 
@@ -42,7 +42,7 @@ async fn get_previous_contract(client: &mut CheeseApiClient<Channel>, account: &
             break contracts;
         } else {
             wait_second *= 2;
-            log::warn!("Failed to get previous contract. Retry after {} seconds", wait_second);
+            tracing::warn!("Failed to get previous contract. Retry after {} seconds", wait_second);
         }
     };
 
@@ -53,7 +53,7 @@ async fn get_previous_contract(client: &mut CheeseApiClient<Channel>, account: &
         .filter_map(|con| match Contract::try_from(con) {
             Ok(c) => Some(c),
             Err(e) => {
-                log::error!("while parsing contract, error occurred: {}", e);
+                tracing::error!("while parsing contract, error occurred: {}", e);
                 None
             }
         }).collect::<Vec<_>>()

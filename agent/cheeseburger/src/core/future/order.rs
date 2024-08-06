@@ -74,7 +74,7 @@ async fn order(
         } else {
             let wait_second = 2_u64.pow(wait_time);
 
-            log::warn!("Failed to trade future option. Retry after {} seconds", wait_second);
+            tracing::warn!("Failed to trade future option. Retry after {} seconds", wait_second);
             tokio::time::sleep(std::time::Duration::from_secs(wait_second)).await;
             wait_time += 1;
 

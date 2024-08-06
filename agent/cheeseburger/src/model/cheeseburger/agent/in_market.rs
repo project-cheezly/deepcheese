@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use log::warn;
+use tracing::warn;
 use tokio::sync::{
     broadcast::Receiver,
     Mutex
@@ -73,7 +73,7 @@ async fn long_strategy(
     let mut client = client::new().await?;
     let value_range = calculate_target_range(&mut client, config.ratio, &code).await?;
 
-    log::info!("Start long strategy: {}, {}", code, value_range);
+    tracing::info!("Start long strategy: {}, {}", code, value_range);
 
     let mut amount = 0;
 

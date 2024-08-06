@@ -14,7 +14,7 @@ pub(super) async fn load()
     base_config::declare_config!("cheon_more", CheonMoreConfig);
     base_config::load_mac!()
         .or_else(|e| {
-            log::error!("Failed to load config: {}", e);
+            tracing::error!("Failed to load config: {}", e);
             Err(e)
         })
 }

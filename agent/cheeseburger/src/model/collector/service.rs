@@ -1,6 +1,6 @@
 use std::sync::Arc;
 use chrono::{Local, NaiveTime};
-use log::{error, info};
+use tracing::{error, info};
 use tokio::sync::broadcast::Receiver;
 use tokio::sync::Mutex;
 use tokio::task::JoinHandle;

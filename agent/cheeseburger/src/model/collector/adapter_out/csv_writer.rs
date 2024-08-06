@@ -34,7 +34,7 @@ where
             .has_headers(false)
             .from_path(file_name)
             .or_else(|e| {
-                log::error!("Failed to create csv file: {}", e);
+                tracing::error!("Failed to create csv file: {}", e);
                 Err(e)
             })?;
 

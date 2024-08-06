@@ -18,7 +18,7 @@ pub(super) async fn load()
     base_config::declare_config!("recorder", RecorderConfig);
     base_config::load_mac!()
         .or_else(|e| {
-            log::error!("Failed to load config: {}", e);
+            tracing::error!("Failed to load config: {}", e);
             Err(e)
         })
 }

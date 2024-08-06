@@ -27,7 +27,7 @@ pub async fn start_recorder_service(pool: Arc<PgPool>)
     let handle = tokio::spawn(async move {
         let res = record_loop(&realtime_config, realtime_pool).await;
         if let Err(e) = res {
-            log::error!("Recorder service error: {}", e);
+            tracing::error!("Recorder service error: {}", e);
         }
     });
 
@@ -41,9 +41,9 @@ pub async fn start_recorder_service(pool: Arc<PgPool>)
         }
 
         record_daily_value(&daily_config, daily_pool).await.unwrap_or_else(|e| {
-            log::warn!("Failed to record daily value: {}", e);
+            tracing::warn!("Failed to record daily value: {}", e);
         });
-        log::info!("Recorder service finished");
+        tracing::info!("Recorder service finished");
     });
 
     Ok(())
@@ -57,14 +57,14 @@ async fn record_daily_value(config: &RecorderConfig, pool: Arc<PgPool>)
     let value = match shinhan_in::get_value(&config.account).await {
         Ok(value) => value,
         Err(e) => {
-            log::error!("Failed to get value: {}", e);
+            tracing::error!("Failed to get value: {}", e);
             return Ok(());
         }
     };
 
     let previous_value = get_previous_value(&mut conn, config.category_id).await?;
     let diff = value - previous_value;
-    log::info!("Daily value: {}", value);
+    tracing::info!("Daily value: {}", value);
 
     if let Err(e) = insert_daily_value(
             &mut conn,
@@ -74,11 +74,11 @@ async fn record_daily_value(config: &RecorderConfig, pool: Arc<PgPool>)
             diff
         ).await
     {
-        log::warn!("Failed to record daily value: {}", e);
+        tracing::warn!("Failed to record daily value: {}", e);
     }
 
     if let Err(e) = conn.close().await {
-        log::warn!("Failed to close connection: {}", e);
+        tracing::warn!("Failed to close connection: {}", e);
     }
 
     Ok(())
@@ -128,7 +128,7 @@ async fn record_loop(config: &RecorderConfig, pool: Arc<PgPool>)
         let value = match shinhan_in::get_value(&config.account).await {
             Ok(value) => value,
             Err(e) => {
-                log::warn!("Failed to get value: {}", e);
+                tracing::warn!("Failed to get value: {}", e);
                 continue;
             }
         };
@@ -136,12 +136,12 @@ async fn record_loop(config: &RecorderConfig, pool: Arc<PgPool>)
         if let Err(e) =
             record_realtime_value(&mut conn, config.category_id, value).await
         {
-            log::warn!("Failed to record realtime value: {}", e);
+            tracing::warn!("Failed to record realtime value: {}", e);
             continue;
         }
 
         if let Err(e) = conn.close().await {
-            log::warn!("Failed to close connection: {}", e);
+            tracing::warn!("Failed to close connection: {}", e);
         }
 
         tokio::time::sleep(Duration::from_secs(60)).await;
@@ -169,6 +169,7 @@ async fn record_realtime_value(
 #[cfg(test)]
 mod tests {
     use std::env;
+    use sqlx::Postgres;
     use super::*;
     use std::sync::Arc;
     use crate::core::database::get_pool;
@@ -177,7 +178,6 @@ mod tests {
     async fn test_start_recorder_service()
         -> Result<(), Box<dyn std::error::Error + Sync + Send>>
     {
-        env_logger::init();
 
         let pool = get_pool::<Postgres>().await?;
         start_recorder_service(Arc::new(pool)).await?;
@@ -192,7 +192,6 @@ mod tests {
         -> Result<(), Box<dyn std::error::Error + Sync + Send>>
     {
         env::set_var("RUST_LOG", "DEBUG");
-        env_logger::init();
 
         let pool = get_pool::<Postgres>().await?;
         let config = config::load().await?;
